@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  category  String   // turnik, ruckhod, swedish, workout, street
+  nameUk    String
+  nameRu    String
+  nameEn    String
+  price     Int      // integer price in UAH (e.g., 18900)
+  badgeUk   String?
+  badgeRu   String?
+  badgeEn   String?
+  specsJson String   // JSON string of specs, e.g. '[["Цвет","Красный"],["Профиль","80x80 мм"]]'
+  photo     String   // base64 image data or URL string
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ConstructorElement {
+  id     String @id // e.g. "turnik", "swedish", "brusy", "press", "lava", "rope"
+  nameUk String
+  nameRu String
+  nameEn String
+  price  Int
+  icon   String // emoji or icon class
+}
+
+model Color {
+  id     String @id // hex code, e.g. "#2C2C2C"
+  nameUk String
+  nameRu String
+  nameEn String
+}
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  type        String   // callback, order, customizer
+  name        String
+  phone       String
+  comment     String?
+  detailsJson String   // JSON string with selected items/colors or product bought
+  status      String   @default("new") // new, in_progress, done
+  createdAt   DateTime @default(now())
+}
+
+model ContentText {
+  key String @id // key name, e.g. "hero_title", "cta_order"
+  uk  String // Ukrainian
+  ru  String // Russian
+  en  String // English
+}
+
+model SeoMetadata {
+  route   String @id // route path, e.g. "/", "/catalog", "/build"
+  titleUk String
+  titleRu String
+  titleEn String
+  descUk  String
+  descRu  String
+  descEn  String
+}
