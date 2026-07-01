@@ -2,7 +2,7 @@ import React from 'react';
 import { prisma } from '@/lib/prisma';
 import HomeClient from '@/components/HomeClient';
 
-export const revalidate = 60; // Пересобирать страницу каждые 60 секунд (ISR) для кэширования и максимальной скорости
+export const dynamic = 'force-dynamic'; // Предотвращает ошибку подключения к БД во время Railway build
 
 export default async function HomePage() {
   // Загружаем данные на сервере напрямую из базы данных
