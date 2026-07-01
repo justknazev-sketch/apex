@@ -101,7 +101,25 @@ export default function CartDrawer() {
           <>
             <div className="cart-items">
               {cart.length === 0 ? (
-                <div className="cart-empty">{t('cart_empty')}</div>
+                <div className="cart-empty">
+                  <span className="cart-empty-icon">🛒</span>
+                  <div className="cart-empty-title">{t('cart_empty')}</div>
+                  <p className="cart-empty-sub">
+                    {t('cart_empty') === 'cart_empty' ? 'Додайте товари з каталогу' : 'Додайте товари з каталогу'}
+                  </p>
+                  <button
+                    className="btn-outline"
+                    style={{ padding: '10px 24px', fontSize: '13px', marginTop: '4px' }}
+                    onClick={() => {
+                      closeCart();
+                      setTimeout(() => {
+                        document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 300);
+                    }}
+                  >
+                    Перейти до каталогу
+                  </button>
+                </div>
               ) : (
                 cart.map((item) => (
                   <div className="cart-item" key={item.id}>

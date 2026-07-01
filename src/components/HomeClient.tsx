@@ -297,12 +297,17 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                     </ul>
                     <div className="product-footer">
                       <span className="product-price">{p.price} ₴</span>
-                      <button 
-                        className={`product-buy-btn ${isAdded ? 'in-cart' : ''}`}
-                        onClick={() => addToCart({ id: p.id, name: getLocalizedName(p), price: p.price, photo: p.photo })}
-                      >
-                        {isAdded ? t('product_in_cart') : t('product_buy')}
-                      </button>
+                      <div className="product-actions">
+                        <Link href={`/product/${p.id}`} className="product-detail-btn">
+                          {language === 'uk' ? 'Детально' : language === 'ru' ? 'Подробнее' : 'Details'}
+                        </Link>
+                        <button 
+                          className={`product-buy-btn ${isAdded ? 'in-cart' : ''}`}
+                          onClick={() => addToCart({ id: p.id, name: getLocalizedName(p), price: p.price, photo: p.photo })}
+                        >
+                          {isAdded ? t('product_in_cart') : t('product_buy')}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </article>

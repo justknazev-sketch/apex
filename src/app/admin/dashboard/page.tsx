@@ -99,6 +99,8 @@ export default function AdminDashboardPage() {
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
   const [colorForm, setColorForm] = useState({ id: '', nameUk: '', nameRu: '', nameEn: '' });
 
+  const [adminLang, setAdminLang] = useState<'uk' | 'ru' | 'en'>('uk');
+
   // Log out handler
   const handleLogout = async () => {
     const res = await fetch('/api/auth/logout', { method: 'POST' });
@@ -810,35 +812,98 @@ export default function AdminDashboardPage() {
                 </select>
               </div>
 
-              {/* Localized Names */}
-              <div className="form-field">
-                <input 
-                  type="text" 
-                  placeholder="Назва (Українська)*" 
-                  value={productForm.nameUk}
-                  onChange={(e) => setProductForm(prev => ({ ...prev, nameUk: e.target.value }))}
-                  required
-                />
+              {/* Localized Inputs */}
+              <div className="admin-lang-tabs">
+                <button 
+                  type="button" 
+                  className={`admin-lang-tab uk ${adminLang === 'uk' ? 'active' : ''}`}
+                  onClick={() => setAdminLang('uk')}
+                >
+                  Українська (Основна)
+                </button>
+                <button 
+                  type="button" 
+                  className={`admin-lang-tab ru ${adminLang === 'ru' ? 'active' : ''}`}
+                  onClick={() => setAdminLang('ru')}
+                >
+                  Русский
+                </button>
+                <button 
+                  type="button" 
+                  className={`admin-lang-tab en ${adminLang === 'en' ? 'active' : ''}`}
+                  onClick={() => setAdminLang('en')}
+                >
+                  English
+                </button>
               </div>
-              <div className="form-field">
-                <input 
-                  type="text" 
-                  placeholder="Назва (Русский)" 
-                  value={productForm.nameRu}
-                  onChange={(e) => setProductForm(prev => ({ ...prev, nameRu: e.target.value }))}
-                />
-              </div>
-              <div className="form-field">
-                <input 
-                  type="text" 
-                  placeholder="Назва (English)" 
-                  value={productForm.nameEn}
-                  onChange={(e) => setProductForm(prev => ({ ...prev, nameEn: e.target.value }))}
-                />
-              </div>
+              <div className="admin-lang-hint">Заповніть поля для всіх мов, перемикаючись між вкладками</div>
+
+              {adminLang === 'uk' && (
+                <>
+                  <div className="form-field">
+                    <input 
+                      type="text" 
+                      placeholder="Назва (Українська)*" 
+                      value={productForm.nameUk}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, nameUk: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="form-field">
+                    <input 
+                      type="text" 
+                      placeholder="Плашка (напр. 'Хіт', не обов'язково)" 
+                      value={productForm.badgeUk}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, badgeUk: e.target.value }))}
+                    />
+                  </div>
+                </>
+              )}
+
+              {adminLang === 'ru' && (
+                <>
+                  <div className="form-field">
+                    <input 
+                      type="text" 
+                      placeholder="Название (Русский)" 
+                      value={productForm.nameRu}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, nameRu: e.target.value }))}
+                    />
+                  </div>
+                  <div className="form-field">
+                    <input 
+                      type="text" 
+                      placeholder="Плашка (напр. 'Хит', не обязательно)" 
+                      value={productForm.badgeRu}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, badgeRu: e.target.value }))}
+                    />
+                  </div>
+                </>
+              )}
+
+              {adminLang === 'en' && (
+                <>
+                  <div className="form-field">
+                    <input 
+                      type="text" 
+                      placeholder="Name (English)" 
+                      value={productForm.nameEn}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, nameEn: e.target.value }))}
+                    />
+                  </div>
+                  <div className="form-field">
+                    <input 
+                      type="text" 
+                      placeholder="Badge (e.g. 'Bestseller', optional)" 
+                      value={productForm.badgeEn}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, badgeEn: e.target.value }))}
+                    />
+                  </div>
+                </>
+              )}
 
               {/* Price */}
-              <div className="form-field">
+              <div className="form-field" style={{ marginTop: '16px' }}>
                 <input 
                   type="number" 
                   placeholder="Ціна (₴)*" 
@@ -846,34 +911,6 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setProductForm(prev => ({ ...prev, price: e.target.value }))}
                   required
                 />
-              </div>
-
-              {/* Localized Badges */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                <div className="form-field">
-                  <input 
-                    type="text" 
-                    placeholder="Плашка (UA)" 
-                    value={productForm.badgeUk}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, badgeUk: e.target.value }))}
-                  />
-                </div>
-                <div className="form-field">
-                  <input 
-                    type="text" 
-                    placeholder="Плашка (RU)" 
-                    value={productForm.badgeRu}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, badgeRu: e.target.value }))}
-                  />
-                </div>
-                <div className="form-field">
-                  <input 
-                    type="text" 
-                    placeholder="Плашка (EN)" 
-                    value={productForm.badgeEn}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, badgeEn: e.target.value }))}
-                  />
-                </div>
               </div>
 
               {/* Image Upload */}
@@ -960,31 +997,27 @@ export default function AdminDashboardPage() {
                   required
                 />
               </div>
-              <div className="form-field">
-                <input 
-                  type="text" 
-                  placeholder="Назва (UA)*" 
-                  value={colorForm.nameUk}
-                  onChange={(e) => setColorForm(prev => ({ ...prev, nameUk: e.target.value }))}
-                  required
-                />
+              <div className="admin-lang-tabs" style={{ marginTop: '16px' }}>
+                <button type="button" className={`admin-lang-tab uk ${adminLang === 'uk' ? 'active' : ''}`} onClick={() => setAdminLang('uk')}>Укр</button>
+                <button type="button" className={`admin-lang-tab ru ${adminLang === 'ru' ? 'active' : ''}`} onClick={() => setAdminLang('ru')}>Рус</button>
+                <button type="button" className={`admin-lang-tab en ${adminLang === 'en' ? 'active' : ''}`} onClick={() => setAdminLang('en')}>Eng</button>
               </div>
-              <div className="form-field">
-                <input 
-                  type="text" 
-                  placeholder="Назва (RU)" 
-                  value={colorForm.nameRu}
-                  onChange={(e) => setColorForm(prev => ({ ...prev, nameRu: e.target.value }))}
-                />
-              </div>
-              <div className="form-field">
-                <input 
-                  type="text" 
-                  placeholder="Назва (EN)" 
-                  value={colorForm.nameEn}
-                  onChange={(e) => setColorForm(prev => ({ ...prev, nameEn: e.target.value }))}
-                />
-              </div>
+
+              {adminLang === 'uk' && (
+                <div className="form-field">
+                  <input type="text" placeholder="Назва (UA)*" value={colorForm.nameUk} onChange={(e) => setColorForm(prev => ({ ...prev, nameUk: e.target.value }))} required />
+                </div>
+              )}
+              {adminLang === 'ru' && (
+                <div className="form-field">
+                  <input type="text" placeholder="Назва (RU)" value={colorForm.nameRu} onChange={(e) => setColorForm(prev => ({ ...prev, nameRu: e.target.value }))} />
+                </div>
+              )}
+              {adminLang === 'en' && (
+                <div className="form-field">
+                  <input type="text" placeholder="Назва (EN)" value={colorForm.nameEn} onChange={(e) => setColorForm(prev => ({ ...prev, nameEn: e.target.value }))} />
+                </div>
+              )}
 
               <div className="admin-modal-actions">
                 <button type="button" className="btn-outline" onClick={() => setIsColorModalOpen(false)} style={{ padding: '8px 16px', fontSize: '12px' }}>
