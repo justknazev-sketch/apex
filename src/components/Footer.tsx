@@ -5,7 +5,21 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function Footer() {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
+
+  const year = new Date().getFullYear();
+
+  const pitch = {
+    uk: 'Total Fitness Solutions — якісне та довговічне спортивне обладнання для вулиць та залів.',
+    ru: 'Total Fitness Solutions — качественное и долговечное спортивное оборудование для улиц и залов.',
+    en: 'Total Fitness Solutions — quality and durable sports equipment for outdoor and indoor use.',
+  };
+
+  const copy = {
+    uk: `© ${year} Apex Force. Усі права захищені.`,
+    ru: `© ${year} Apex Force. Все права защищены.`,
+    en: `© ${year} Apex Force. All rights reserved.`,
+  };
 
   return (
     <footer className="site-footer">
@@ -16,12 +30,12 @@ export default function Footer() {
             <span className="logo-force">FORCE</span>
           </Link>
           <p className="footer-pitch">
-            Total Fitness Solutions — якісне та довговічне спортивне обладнання для вулиць та залів.
+            {pitch[language] || pitch.uk}
           </p>
         </div>
 
         <div className="footer-copy">
-          {t('footer_copy')}
+          {copy[language] || copy.uk}
         </div>
 
         <div className="footer-socials">
