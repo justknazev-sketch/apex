@@ -16,9 +16,40 @@ const outfit = Outfit({
   variable: "--font-outfit",
 });
 
-export const metadata = {
-  title: "Apex Force — Вершина Сили",
-  description: "Total Fitness Solutions — Виробництво та продаж спортивного інвентаря",
+import type { Metadata, Viewport } from 'next';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#121212',
+};
+
+export const metadata: Metadata = {
+  title: {
+    default: "Apex Force — Вершина Сили | Спортивний інвентар",
+    template: "%s | Apex Force"
+  },
+  description: "Total Fitness Solutions — Виробництво та продаж професійного спортивного інвентаря, турніків, шведських стінок та воркаут комплексів.",
+  keywords: ["спорт", "турніки", "шведські стінки", "воркаут", "фітнес", "Apex Force", "спортивний інвентар"],
+  authors: [{ name: 'Apex Force' }],
+  openGraph: {
+    title: "Apex Force — Вершина Сили",
+    description: "Професійне спортивне обладнання від виробника. Вуличні комплекси, турніки, рукоходи.",
+    url: "https://apex-production.up.railway.app",
+    siteName: "Apex Force",
+    locale: "uk_UA",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Apex Force — Вершина Сили",
+    description: "Професійне спортивне обладнання від виробника",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  }
 };
 
 export default function RootLayout({

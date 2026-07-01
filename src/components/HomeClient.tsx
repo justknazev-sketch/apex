@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 
@@ -275,7 +276,14 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                 <article className="product-card" key={p.id}>
                   <div className="product-photo-wrap">
                     {p.photo ? (
-                      <img src={p.photo} alt={getLocalizedName(p)} className="product-photo-img" />
+                      <Image 
+                        src={p.photo} 
+                        alt={getLocalizedName(p)} 
+                        className="product-photo-img" 
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        style={{ objectFit: 'cover' }}
+                      />
                     ) : (
                       <span className="product-placeholder-icon">🏋️</span>
                     )}

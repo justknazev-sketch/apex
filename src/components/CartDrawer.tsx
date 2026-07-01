@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -124,7 +125,9 @@ export default function CartDrawer() {
                 cart.map((item) => (
                   <div className="cart-item" key={item.id}>
                     {item.photo ? (
-                      <img src={item.photo} alt={item.name} className="cart-thumb" />
+                      <div className="cart-thumb" style={{ position: 'relative', overflow: 'hidden' }}>
+                        <Image src={item.photo} alt={item.name} fill sizes="64px" style={{ objectFit: 'cover' }} />
+                      </div>
                     ) : (
                       <div className="cart-thumb-placeholder">🏋️</div>
                     )}

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 
@@ -99,11 +100,11 @@ export default function ProductDetailClient({ product }: { product: Product }) {
         ← {language === 'uk' ? 'Назад до каталогу' : language === 'ru' ? 'Назад в каталог' : 'Back to Catalog'}
       </Link>
 
-      <div className="product-detail-wrap" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start' }}>
+      <div className="product-detail-grid">
         {/* Left: Photo */}
         <div className="product-detail-image-box" style={{ background: '#252525', border: '1px solid var(--border-light)', borderRadius: '8px', overflow: 'hidden', aspectRatio: '4/3', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
           {product.photo ? (
-            <img src={product.photo} alt={getLocalizedName()} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <Image src={product.photo} alt={getLocalizedName()} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'cover' }} />
           ) : (
             <span style={{ fontSize: '96px', opacity: 0.2 }}>🏋️</span>
           )}
