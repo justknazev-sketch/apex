@@ -58,7 +58,7 @@ export default function Header() {
         <ul className="nav-menu">
           <li><a href="#catalog" onClick={(e) => handleNavClick(e, '#catalog')}>{t('nav_catalog')}</a></li>
           <li><a href="#constructor" onClick={(e) => handleNavClick(e, '#constructor')}>{t('nav_constructor')}</a></li>
-          <li><a href="#works" onClick={(e) => handleNavClick(e, '#works')}>{t('nav_works')}</a></li>
+
           <li><a href="#reviews" onClick={(e) => handleNavClick(e, '#reviews')}>{t('nav_reviews')}</a></li>
           <li><a href="#contact" onClick={(e) => handleNavClick(e, '#contact')}>{t('nav_contact')}</a></li>
           {isAdminLoggedIn && (
@@ -138,7 +138,7 @@ export default function Header() {
           <ul className="mobile-menu-panel" onClick={(e) => e.stopPropagation()}>
             <li><a href="#catalog" onClick={(e) => handleNavClick(e, '#catalog')}>{t('nav_catalog')}</a></li>
             <li><a href="#constructor" onClick={(e) => handleNavClick(e, '#constructor')}>{t('nav_constructor')}</a></li>
-            <li><a href="#works" onClick={(e) => handleNavClick(e, '#works')}>{t('nav_works')}</a></li>
+
             <li><a href="#reviews" onClick={(e) => handleNavClick(e, '#reviews')}>{t('nav_reviews')}</a></li>
             <li><a href="#contact" onClick={(e) => handleNavClick(e, '#contact')}>{t('nav_contact')}</a></li>
             {isAdminLoggedIn && (

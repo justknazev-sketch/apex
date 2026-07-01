@@ -82,6 +82,7 @@ export default function AdminDashboardPage() {
   // Modals / Form states
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [productForm, setProductForm] = useState({
     category: 'street',
     nameUk: '',
@@ -200,15 +201,33 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // Product photo file upload to Base64
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Product photo file upload to Cloudinary (unsigned preset)
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProductForm(prev => ({ ...prev, photo: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
+      setIsUploadingPhoto(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'jjekokdx');
+
+      try {
+        const res = await fetch('https://api.cloudinary.com/v1_1/th95enet/image/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setProductForm(prev => ({ ...prev, photo: data.secure_url }));
+        } else {
+          alert('Помилка завантаження фото в Cloudinary');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Помилка з\'єднання при завантаженні фото');
+      } finally {
+        setIsUploadingPhoto(false);
+      }
     }
   };
 
@@ -865,8 +884,10 @@ export default function AdminDashboardPage() {
                   accept="image/*" 
                   onChange={handlePhotoUpload}
                   style={{ border: 'none', background: 'none', paddingLeft: 0 }}
+                  disabled={isUploadingPhoto}
                 />
-                {productForm.photo && (
+                {isUploadingPhoto && <div style={{ fontSize: '12px', color: 'var(--border-focus)', marginTop: '6px' }}>Завантаження фото на Cloudinary...</div>}
+                {productForm.photo && !isUploadingPhoto && (
                   <div style={{ marginTop: '10px' }}>
                     <img src={productForm.photo} alt="Uploaded product preview" style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #333' }} />
                   </div>
@@ -915,8 +936,8 @@ export default function AdminDashboardPage() {
                 <button type="button" className="btn-outline" onClick={() => setIsProductModalOpen(false)} style={{ padding: '10px 20px', fontSize: '13px' }}>
                   Скасувати
                 </button>
-                <button type="submit" className="btn-primary" style={{ padding: '10px 20px', fontSize: '13px' }} disabled={loading}>
-                  {loading ? 'Збереження...' : 'Зберегти'}
+                <button type="submit" className="btn-primary" style={{ padding: '10px 20px', fontSize: '13px' }} disabled={loading || isUploadingPhoto}>
+                  {isUploadingPhoto ? 'Завантаження фото...' : loading ? 'Збереження...' : 'Зберегти'}
                 </button>
               </div>
             </form>
