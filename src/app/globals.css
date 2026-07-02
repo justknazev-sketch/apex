@@ -3,12 +3,12 @@
   --red-hover: #C62828;
   --red-glow: rgba(229, 57, 83, 0.22);
 
-  --bg-dark: #F0EEEB;
+  --bg-dark: #D4D4D4;
   --bg-card: #FFFFFF;
   --bg-card-hover: #F8F7F5;
   --bg-input: #FFFFFF;
 
-  --border-light: #DDDBD8;
+  --border-light: #C0BEBC;
   --border-focus: #E53935;
 
   --text-primary: #1A1A1A;
@@ -16,7 +16,7 @@
   --text-muted: #8A8886;
 
   --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --glass-bg: rgba(244, 242, 239, 0.92);
+  --glass-bg: rgba(212, 212, 212, 0.92);
 
   /* Theme-specific variables */
   --photo-wrap-bg: #D4D4D4;
