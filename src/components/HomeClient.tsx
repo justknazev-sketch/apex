@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 
@@ -45,6 +46,7 @@ interface HomeClientProps {
 export default function HomeClient({ initialProducts, initialParts, initialColors }: HomeClientProps) {
   const { t, language } = useLanguage();
   const { addToCart, cart } = useCart();
+  const router = useRouter();
 
   // Products state (initialized from server-side props)
   const [products] = useState<Product[]>(initialProducts);
@@ -273,7 +275,7 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
               const badge = getLocalizedBadge(p);
 
               return (
-                <article className="product-card" key={p.id}>
+                <article className="product-card" key={p.id} onClick={() => router.push(`/product/${p.id}`)} style={{ cursor: 'pointer' }}>
                   <div className="product-photo-wrap">
                     {p.photo ? (
                       <Image 
@@ -291,9 +293,9 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                   </div>
                   <div className="product-info">
                     <h3 className="product-name">
-                      <Link href={`/product/${p.id}`} className="product-link">
+                      <span className="product-link">
                         {getLocalizedName(p)}
-                      </Link>
+                      </span>
                     </h3>
                     <ul className="product-specs-list">
                       {specs.slice(0, 3).map(([name, val], idx) => (
@@ -306,13 +308,13 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                     <div className="product-footer">
                       <div className="product-price-row">
                         <span className="product-price">{p.price} ₴</span>
-                        <Link href={`/product/${p.id}`} className="product-detail-btn">
-                          {language === 'uk' ? 'Детально' : language === 'ru' ? 'Подробнее' : 'Details'}
-                        </Link>
                       </div>
                       <button 
                         className={`product-buy-btn ${isAdded ? 'in-cart' : ''}`}
-                        onClick={() => addToCart({ id: p.id, name: getLocalizedName(p), price: p.price, photo: p.photo })}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart({ id: p.id, name: getLocalizedName(p), price: p.price, photo: p.photo });
+                        }}
                       >
                         {isAdded ? '✓ ' : ''}{isAdded ? t('product_in_cart') : t('product_buy')}
                       </button>

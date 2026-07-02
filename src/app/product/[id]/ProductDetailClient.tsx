@@ -102,9 +102,9 @@ export default function ProductDetailClient({ product }: { product: Product }) {
 
       <div className="product-detail-grid">
         {/* Left: Photo */}
-        <div className="product-detail-image-box" style={{ background: '#252525', border: '1px solid var(--border-light)', borderRadius: '8px', overflow: 'hidden', aspectRatio: '4/3', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+        <div className="product-detail-image-box" style={{ background: 'var(--photo-wrap-bg)', border: '1px solid transparent', borderRadius: '8px', overflow: 'hidden', aspectRatio: '4/3', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
           {product.photo ? (
-            <Image src={product.photo} alt={getLocalizedName()} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'cover' }} />
+            <Image src={product.photo} alt={getLocalizedName()} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'cover', mixBlendMode: 'multiply' }} />
           ) : (
             <span style={{ fontSize: '96px', opacity: 0.2 }}>🏋️</span>
           )}
