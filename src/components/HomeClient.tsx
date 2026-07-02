@@ -296,7 +296,7 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                       </Link>
                     </h3>
                     <ul className="product-specs-list">
-                      {specs.slice(0, 4).map(([name, val], idx) => (
+                      {specs.slice(0, 3).map(([name, val], idx) => (
                         <li key={idx}>
                           <span className="spec-name">{name}:</span>
                           <span className="spec-val">{val}</span>
@@ -304,18 +304,18 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                       ))}
                     </ul>
                     <div className="product-footer">
-                      <span className="product-price">{p.price} ₴</span>
-                      <div className="product-actions">
+                      <div className="product-price-row">
+                        <span className="product-price">{p.price} ₴</span>
                         <Link href={`/product/${p.id}`} className="product-detail-btn">
                           {language === 'uk' ? 'Детально' : language === 'ru' ? 'Подробнее' : 'Details'}
                         </Link>
-                        <button 
-                          className={`product-buy-btn ${isAdded ? 'in-cart' : ''}`}
-                          onClick={() => addToCart({ id: p.id, name: getLocalizedName(p), price: p.price, photo: p.photo })}
-                        >
-                          {isAdded ? t('product_in_cart') : t('product_buy')}
-                        </button>
                       </div>
+                      <button 
+                        className={`product-buy-btn ${isAdded ? 'in-cart' : ''}`}
+                        onClick={() => addToCart({ id: p.id, name: getLocalizedName(p), price: p.price, photo: p.photo })}
+                      >
+                        {isAdded ? '✓ ' : ''}{isAdded ? t('product_in_cart') : t('product_buy')}
+                      </button>
                     </div>
                   </div>
                 </article>
