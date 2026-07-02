@@ -104,7 +104,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
         {/* Left: Photo */}
         <div className="product-detail-image-box" style={{ background: 'var(--photo-wrap-bg)', border: '1px solid transparent', borderRadius: '8px', overflow: 'hidden', aspectRatio: '4/3', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
           {product.photo ? (
-            <Image src={product.photo} alt={getLocalizedName()} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'cover', mixBlendMode: 'multiply' }} />
+            <Image src={product.photo} alt={getLocalizedName()} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'contain', mixBlendMode: 'multiply' }} />
           ) : (
             <span style={{ fontSize: '96px', opacity: 0.2 }}>🏋️</span>
           )}

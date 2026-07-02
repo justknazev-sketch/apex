@@ -284,7 +284,7 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                         className="product-photo-img" 
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        style={{ objectFit: 'cover' }}
+                        style={{ objectFit: 'contain' }}
                       />
                     ) : (
                       <span className="product-placeholder-icon">🏋️</span>
