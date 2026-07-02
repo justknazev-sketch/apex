@@ -17,6 +17,37 @@
 
   --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --glass-bg: rgba(244, 242, 239, 0.92);
+
+  /* Theme-specific variables */
+  --photo-wrap-bg: #E3E3E3;
+  --footer-bg: #E8E6E3;
+  --hero-h1-gradient: linear-gradient(160deg, #111111 0%, #333333 50%, #666666 100%);
+  --footer-logo-apex: var(--text-primary);
+  --grid-line-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+  --red-glow: rgba(229, 57, 83, 0.25);
+
+  --bg-dark: #121212;
+  --bg-card: #1E1E1E;
+  --bg-card-hover: #262626;
+  --bg-input: #2D2D2D;
+
+  --border-light: #333333;
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #AAAAAA;
+  --text-muted: #666666;
+
+  --glass-bg: rgba(30, 30, 30, 0.75);
+
+  /* Theme-specific variables for Dark */
+  --photo-wrap-bg: #252525;
+  --footer-bg: #0d0d0d;
+  --hero-h1-gradient: linear-gradient(160deg, #FFFFFF 0%, #DDDDDD 50%, #AAAAAA 100%);
+  --footer-logo-apex: #FFFFFF;
+  --grid-line-color: rgba(255, 255, 255, 0.03);
 }
 
 * {
@@ -402,8 +433,8 @@ section h2 {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    linear-gradient(var(--grid-line-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line-color) 1px, transparent 1px);
   background-size: 60px 60px;
   pointer-events: none;
   z-index: 0;
@@ -440,7 +471,7 @@ section h2 {
   font-size: clamp(42px, 7vw, 82px);
   line-height: 1.0;
   margin-bottom: 28px;
-  background: linear-gradient(160deg, #111111 0%, #333333 50%, #666666 100%);
+  background: var(--hero-h1-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -567,7 +598,7 @@ section h2 {
 .product-photo-wrap {
   width: 100%;
   aspect-ratio: 4/3;
-  background: #E3E3E3;
+  background: var(--photo-wrap-bg);
   position: relative;
   display: flex;
   align-items: center;
@@ -1469,7 +1500,7 @@ section h2 {
 
 /* Footer layout */
 .site-footer {
-  background: #E8E6E3;
+  background: var(--footer-bg);
   border-top: 1px solid var(--border-light);
   padding: 40px 24px;
   margin-top: 100px;
@@ -1499,7 +1530,7 @@ section h2 {
   margin-bottom: 12px;
 }
 
-.footer-logo .logo-apex { color: var(--text-primary); }
+.footer-logo .logo-apex { color: var(--footer-logo-apex); }
 .footer-logo .logo-force { color: var(--red); }
 
 .footer-pitch {
@@ -1999,4 +2030,30 @@ section h2 {
   font-size: 13px;
   color: var(--text-secondary);
   font-weight: 600;
+}
+
+/* Theme Toggle Button Styles */
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  transition: var(--transition-smooth);
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--red);
+  transform: rotate(15deg);
+}
+
+[data-theme="dark"] .theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
 }

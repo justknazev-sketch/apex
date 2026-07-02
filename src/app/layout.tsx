@@ -58,6 +58,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="uk" className={`${inter.variable} ${outfit.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            var theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+          })()
+        `}} />
+      </head>
       <body>
         <LanguageProvider>
           <CartProvider>
