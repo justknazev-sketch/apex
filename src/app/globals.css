@@ -19,7 +19,7 @@
   --glass-bg: rgba(244, 242, 239, 0.92);
 
   /* Theme-specific variables */
-  --photo-wrap-bg: #E3E3E3;
+  --photo-wrap-bg: #D4D4D4;
   --footer-bg: #E8E6E3;
   --hero-h1-gradient: linear-gradient(160deg, #111111 0%, #333333 50%, #666666 100%);
   --footer-logo-apex: var(--text-primary);
