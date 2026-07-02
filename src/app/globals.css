@@ -1,22 +1,22 @@
 :root {
   --red: #E53935;
   --red-hover: #C62828;
-  --red-glow: rgba(229, 57, 83, 0.25);
-  
-  --bg-dark: #121212;
-  --bg-card: #1E1E1E;
-  --bg-card-hover: #262626;
-  --bg-input: #2D2D2D;
-  
-  --border-light: #333333;
+  --red-glow: rgba(229, 57, 83, 0.22);
+
+  --bg-dark: #F0EEEB;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F8F7F5;
+  --bg-input: #F2F0ED;
+
+  --border-light: #DDDBD8;
   --border-focus: #E53935;
-  
-  --text-primary: #FFFFFF;
-  --text-secondary: #AAAAAA;
-  --text-muted: #666666;
-  
+
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B6563;
+  --text-muted: #9A9896;
+
   --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --glass-bg: rgba(30, 30, 30, 0.75);
+  --glass-bg: rgba(244, 242, 239, 0.92);
 }
 
 * {
@@ -186,7 +186,7 @@ button, input, select, textarea {
 
 .lang-opt:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .lang-opt.active {
@@ -212,7 +212,7 @@ button, input, select, textarea {
 }
 
 .cart-icon-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
   color: var(--red);
 }
 
@@ -230,7 +230,7 @@ button, input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--bg-dark);
+  border: 2px solid var(--bg-card);
 }
 
 .nav-cta-btn {
@@ -318,7 +318,7 @@ button, input, select, textarea {
 .btn-outline {
   background: transparent;
   color: var(--text-primary);
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid rgba(0,0,0,0.18);
   padding: 14px 28px;
   font-size: 14px;
   font-weight: 700;
@@ -402,8 +402,8 @@ section h2 {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
   background-size: 60px 60px;
   pointer-events: none;
   z-index: 0;
@@ -440,7 +440,7 @@ section h2 {
   font-size: clamp(42px, 7vw, 82px);
   line-height: 1.0;
   margin-bottom: 28px;
-  background: linear-gradient(160deg, #FFFFFF 0%, #DDDDDD 50%, #AAAAAA 100%);
+  background: linear-gradient(160deg, #111111 0%, #333333 50%, #666666 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -567,7 +567,7 @@ section h2 {
 .product-photo-wrap {
   width: 100%;
   aspect-ratio: 4/3;
-  background: #252525;
+  background: #D5D3D0;
   position: relative;
   display: flex;
   align-items: center;
@@ -1469,7 +1469,7 @@ section h2 {
 
 /* Footer layout */
 .site-footer {
-  background: #0d0d0d;
+  background: #E8E6E3;
   border-top: 1px solid var(--border-light);
   padding: 40px 24px;
   margin-top: 100px;
@@ -1499,7 +1499,7 @@ section h2 {
   margin-bottom: 12px;
 }
 
-.footer-logo .logo-apex { color: white; }
+.footer-logo .logo-apex { color: var(--text-primary); }
 .footer-logo .logo-force { color: var(--red); }
 
 .footer-pitch {
