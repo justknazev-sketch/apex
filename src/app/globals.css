@@ -3,24 +3,24 @@
   --red-hover: #C62828;
   --red-glow: rgba(229, 57, 83, 0.22);
 
-  --bg-dark: #F0EEEB;
-  --bg-card: #FFFFFF;
-  --bg-card-hover: #F8F7F5;
-  --bg-input: #F2F0ED;
+  --bg-dark: #D4D4D4;
+  --bg-card: #D4D4D4;
+  --bg-card-hover: #C9C9C9;
+  --bg-input: #FFFFFF;
 
-  --border-light: #DDDBD8;
+  --border-light: #C0BEBC;
   --border-focus: #E53935;
 
   --text-primary: #1A1A1A;
-  --text-secondary: #6B6563;
-  --text-muted: #9A9896;
+  --text-secondary: #5A5553;
+  --text-muted: #8A8886;
 
   --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --glass-bg: rgba(244, 242, 239, 0.92);
+  --glass-bg: rgba(212, 212, 212, 0.92);
 
   /* Theme-specific variables */
   --photo-wrap-bg: #D4D4D4;
-  --footer-bg: #E8E6E3;
+  --footer-bg: #C8C6C3;
   --hero-h1-gradient: linear-gradient(160deg, #111111 0%, #333333 50%, #666666 100%);
   --footer-logo-apex: var(--text-primary);
   --grid-line-color: rgba(0, 0, 0, 0.05);
