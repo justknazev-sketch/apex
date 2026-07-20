@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
+import "./admin.css";
 import { LanguageProvider } from '@/context/LanguageContext';
 import { CartProvider } from '@/context/CartContext';
 import Header from '@/components/Header';
@@ -51,13 +52,18 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({
+import { cookies } from 'next/headers';
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const lang = cookieStore.get('NEXT_LOCALE')?.value || 'uk';
+
   return (
-    <html lang="uk" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang={lang} className={`${inter.variable} ${outfit.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {

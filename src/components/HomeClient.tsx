@@ -75,6 +75,18 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
   const [cbComment, setCbComment] = useState('');
   const [cbSuccess, setCbSuccess] = useState(false);
 
+  const getLocalizedName = (item: Product | ConstructorPart | ColorPreset) => {
+    if (language === 'ru') return item.nameRu;
+    if (language === 'en') return item.nameEn;
+    return item.nameUk; // Default Ukrainian
+  };
+
+  const getLocalizedBadge = (item: Product) => {
+    if (language === 'ru') return item.badgeRu;
+    if (language === 'en') return item.badgeEn;
+    return item.badgeUk;
+  };
+
   // Filter products on search and tab click
   useEffect(() => {
     let result = products;
@@ -91,20 +103,8 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
       });
     }
 
-    setFilteredProducts(result);
-  }, [activeTab, searchQuery, products]);
-
-  const getLocalizedName = (item: Product | ConstructorPart | ColorPreset) => {
-    if (language === 'ru') return item.nameRu;
-    if (language === 'en') return item.nameEn;
-    return item.nameUk; // Default Ukrainian
-  };
-
-  const getLocalizedBadge = (item: Product) => {
-    if (language === 'ru') return item.badgeRu;
-    if (language === 'en') return item.badgeEn;
-    return item.badgeUk;
-  };
+    Promise.resolve().then(() => setFilteredProducts(result));
+  }, [activeTab, searchQuery, products, language]);
 
   // Constructor actions
   const togglePart = (part: ConstructorPart) => {

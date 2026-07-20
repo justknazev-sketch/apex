@@ -8,7 +8,14 @@ export async function GET() {
     const seoConfigs = await prisma.seoMetadata.findMany({});
     
     // Map to a dictionary: { [route]: { titleUk, descUk, ... } }
-    const dictionary: Record<string, any> = {};
+    const dictionary: Record<string, {
+      titleUk: string;
+      titleRu: string | null;
+      titleEn: string | null;
+      descUk: string;
+      descRu: string | null;
+      descEn: string | null;
+    }> = {};
     seoConfigs.forEach((cfg) => {
       dictionary[cfg.route] = {
         titleUk: cfg.titleUk,

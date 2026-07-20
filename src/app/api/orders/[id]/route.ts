@@ -23,6 +23,10 @@ export async function PUT(
     const body = await request.json();
     const { status } = body;
 
+    if (status && !['new', 'in_progress', 'done'].includes(status)) {
+      return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+    }
+
     const existingOrder = await prisma.order.findUnique({
       where: { id: orderId },
     });

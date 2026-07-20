@@ -34,7 +34,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const savedCart = localStorage.getItem('apex_cart');
     if (savedCart) {
       try {
-        setCart(JSON.parse(savedCart));
+        const parsed = JSON.parse(savedCart);
+        Promise.resolve().then(() => setCart(parsed));
       } catch (err) {
         console.error('Failed to parse cart data:', err);
       }

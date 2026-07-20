@@ -78,11 +78,11 @@ export default function BuildPage() {
     e.preventDefault();
     const partsArray = Object.values(selectedParts);
     if (partsArray.length === 0) {
-      alert(language === 'uk' ? 'Будь ласка, оберіть хоча б один елемент.' : 'Выберите хотя бы один элемент.');
+      alert(language === 'uk' ? 'Будь ласка, оберіть хоча б один елемент.' : language === 'ru' ? 'Выберите хотя бы один элемент.' : 'Please select at least one element.');
       return;
     }
     if (!custName || !custPhone) {
-      alert(language === 'uk' ? 'Заповніть ім\'я та телефон.' : 'Заполните имя и телефон.');
+      alert(language === 'uk' ? 'Заповніть ім\'я та телефон.' : language === 'ru' ? 'Заполните имя и телефон.' : 'Please fill name and phone.');
       return;
     }
 
@@ -112,18 +112,18 @@ export default function BuildPage() {
         setCustName('');
         setCustPhone('');
       } else {
-        alert('Помилка при створенні заявки. Спробуйте ще раз.');
+        alert(language === 'uk' ? 'Помилка при створенні заявки. Спробуйте ще раз.' : language === 'ru' ? 'Ошибка при создании заявки. Попробуйте еще раз.' : 'Error creating order. Please try again.');
       }
     } catch (err) {
       console.error(err);
-      alert('Помилка з\'єднання.');
+      alert(language === 'uk' ? 'Помилка з\'єднання.' : language === 'ru' ? 'Ошибка соединения.' : 'Connection error.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="main-content">
+    <>
       <section id="constructor" style={{ padding: '40px 24px' }}>
         <div style={{ marginBottom: '24px' }}>
           <Link href="/" style={{ color: 'var(--red)', fontWeight: '600' }}>
@@ -247,6 +247,6 @@ export default function BuildPage() {
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 }

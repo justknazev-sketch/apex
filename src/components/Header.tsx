@@ -19,7 +19,7 @@ export default function Header() {
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
     if (savedTheme) {
-      setTheme(savedTheme);
+      Promise.resolve().then(() => setTheme(savedTheme));
       document.documentElement.setAttribute('data-theme', savedTheme);
     }
   }, []);

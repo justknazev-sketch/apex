@@ -55,7 +55,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const handleBuyNow = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !phone) {
-      alert(language === 'uk' ? 'Заповніть обов\'язкові поля' : 'Заполните обязательные поля');
+      alert(language === 'uk' ? 'Заповніть обов\'язкові поля' : language === 'ru' ? 'Заполните обязательные поля' : 'Please fill required fields');
       return;
     }
 
@@ -84,11 +84,11 @@ export default function ProductDetailClient({ product }: { product: Product }) {
         setName('');
         setPhone('');
       } else {
-        alert('Помилка замовлення. Спробуйте ще раз.');
+        alert(language === 'uk' ? 'Помилка замовлення. Спробуйте ще раз.' : language === 'ru' ? 'Ошибка заказа. Попробуйте еще раз.' : 'Order error. Please try again.');
       }
     } catch (err) {
       console.error(err);
-      alert('Помилка з\'єднання.');
+      alert(language === 'uk' ? 'Помилка з\'єднання.' : language === 'ru' ? 'Ошибка соединения.' : 'Connection error.');
     } finally {
       setLoading(false);
     }

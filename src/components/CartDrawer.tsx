@@ -26,7 +26,7 @@ export default function CartDrawer() {
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !phone) {
-      alert(t('constructor_form_phone') ? 'Будь ласка, заповніть ім\'я та телефон' : 'Please fill name and phone');
+      alert(language === 'uk' ? 'Будь ласка, заповніть ім\'я та телефон' : language === 'ru' ? 'Пожалуйста, заполните имя и телефон' : 'Please fill name and phone');
       return;
     }
 
@@ -180,7 +180,7 @@ export default function CartDrawer() {
                       rows={2}
                     />
                   </div>
-                  <button type="submit" className="btn-primary w-full" disabled={loading}>
+                  <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
                     {loading ? 'Надсилання...' : t('cart_checkout')}
                   </button>
                 </form>

@@ -50,8 +50,6 @@ export default async function ProductPage(props: Props) {
   }
 
   return (
-    <div className="main-content">
-      <ProductDetailClient product={product} />
-    </div>
+    <ProductDetailClient product={product} />
   );
 }

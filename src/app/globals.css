@@ -349,7 +349,7 @@ button, input, select, textarea {
 .btn-outline {
   background: transparent;
   color: var(--text-primary);
-  border: 1px solid rgba(0,0,0,0.18);
+  border: 1px solid var(--border-light);
   padding: 14px 28px;
   font-size: 14px;
   font-weight: 700;
@@ -546,7 +546,7 @@ section h2 {
   padding: 12px 18px;
   background: var(--bg-card);
   border: 1px solid var(--border-light);
-  color: white;
+  color: var(--text-primary);
   border-radius: 6px;
   outline: none;
   font-size: 14px;
@@ -764,6 +764,15 @@ section h2 {
   box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
 }
 
+.btn-primary.in-cart {
+  background: #2E7D32;
+  color: white;
+}
+
+.btn-primary.in-cart:hover {
+  background: #1B5E20;
+}
+
 /* Customizer ("Собери сам") */
 .constructor-wrapper {
   display: grid;
@@ -880,7 +889,7 @@ section h2 {
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 20px;
-  color: white;
+  color: var(--text-primary);
 }
 
 .summary-item-list {
@@ -937,7 +946,7 @@ section h2 {
   width: 100%;
   background: var(--bg-input);
   border: 1px solid var(--border-light);
-  color: white;
+  color: var(--text-primary);
   padding: 12px 14px;
   border-radius: 6px;
   font-size: 14px;
@@ -1087,7 +1096,7 @@ section h2 {
 .contact-channel-btn.viber-btn { color: #7360F2; }
 .contact-channel-btn.telegram-btn { color: #229ED9; }
 .contact-channel-btn.instagram-btn { color: #DD2A7B; }
-.contact-channel-btn.tiktok-btn { color: #ffffff; }
+.contact-channel-btn.tiktok-btn { color: var(--text-primary); }
 
 .contact-form-container {
   background: var(--bg-card);
@@ -1151,7 +1160,7 @@ section h2 {
   font-family: var(--font-outfit), sans-serif;
   font-size: 22px;
   font-weight: 700;
-  color: white;
+  color: var(--text-primary);
 }
 
 .cart-head button {
@@ -1288,7 +1297,7 @@ section h2 {
   font-size: 14px;
   font-weight: 700;
   margin-bottom: 4px;
-  color: white;
+  color: var(--text-primary);
 }
 
 .cart-item-price {
@@ -1309,7 +1318,7 @@ section h2 {
   height: 36px;
   border: 1px solid var(--border-light);
   background: var(--bg-dark);
-  color: white;
+  color: var(--text-primary);
   border-radius: 4px;
   cursor: pointer;
   display: flex;
@@ -1441,7 +1450,7 @@ section h2 {
 .lang-modal-card h2 {
   font-size: 24px;
   margin-bottom: 12px;
-  color: white;
+  color: var(--text-primary);
 }
 
 .lang-modal-card p {
@@ -1461,7 +1470,7 @@ section h2 {
 .lang-btn-opt {
   background: var(--bg-dark);
   border: 1px solid var(--border-light);
-  color: white;
+  color: var(--text-primary);
   padding: 14px;
   border-radius: 8px;
   font-size: 15px;
@@ -1753,7 +1762,7 @@ section h2 {
   flex: 1;
   border: 1px solid var(--border-light);
   background: var(--bg-input);
-  color: white;
+  color: var(--text-primary);
   padding: 6px;
   font-size: 11px;
   font-weight: 600;
@@ -1863,7 +1872,7 @@ section h2 {
 .translation-field-group input {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
-  color: white;
+  color: var(--text-primary);
   padding: 10px;
   border-radius: 4px;
   font-size: 13px;

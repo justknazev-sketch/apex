@@ -69,6 +69,16 @@ export async function POST(request: Request) {
     // Записываем IP в rate limiter
     submittedIPs.set(ip, Date.now());
 
+    // Очищаем старые записи, чтобы Map не росла бесконечно
+    if (submittedIPs.size > 1000) {
+      const tenMinutesAgo = Date.now() - 600_000;
+      for (const [key, timestamp] of submittedIPs.entries()) {
+        if (timestamp < tenMinutesAgo) {
+          submittedIPs.delete(key);
+        }
+      }
+    }
+
     const newOrder = await prisma.order.create({
       data: {
         type,
