@@ -15,7 +15,7 @@ export default function CartDrawer() {
     cartTotal, 
     clearCart 
   } = useCart();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
