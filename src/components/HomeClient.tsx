@@ -234,15 +234,20 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
             )}
           </div>
           <h1>
-            {t('hero_title').includes('—') ? (
-              <>
-                <span className="hero-title-main">{t('hero_title').split('—')[0].trim()}</span>
-                <br />
-                <span className="hero-title-sub" style={{ color: 'var(--text-secondary)' }}>{t('hero_title').split('—')[1].trim()}</span>
-              </>
-            ) : (
-              t('hero_title')
-            )}
+            {(() => {
+              const raw = t('hero_title');
+              const cleanText = raw.replace(/^APEX FORCE\s*[—\-]\s*/i, '').trim();
+              const words = cleanText.split(' ');
+              if (words.length > 1) {
+                const lastWord = words.pop();
+                return (
+                  <>
+                    {words.join(' ')} <span className="hero-title-accent">{lastWord}</span>
+                  </>
+                );
+              }
+              return cleanText;
+            })()}
           </h1>
           <p className="hero-desc">{t('hero_desc')}</p>
           <div className="hero-actions">
