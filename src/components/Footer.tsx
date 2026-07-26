@@ -6,7 +6,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { FaViber, FaTelegramPlane, FaInstagram, FaTiktok } from 'react-icons/fa';
 
 export default function Footer() {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   const year = new Date().getFullYear();
 
