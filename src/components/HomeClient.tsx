@@ -222,8 +222,28 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
       {/* Hero Banner */}
       <header className="hero-wrapper">
         <div className="hero-content">
-          <div className="hero-eyebrow">{t('hero_eyebrow')}</div>
-          <h1>{t('hero_title')}</h1>
+          <div className="hero-eyebrow">
+            {t('hero_eyebrow').includes('—') ? (
+              <>
+                <span>{t('hero_eyebrow').split('—')[0].trim()}</span>
+                <span style={{ color: 'var(--red)', margin: '0 8px' }}>•</span>
+                <span>{t('hero_eyebrow').split('—')[1].trim()}</span>
+              </>
+            ) : (
+              t('hero_eyebrow')
+            )}
+          </div>
+          <h1>
+            {t('hero_title').includes('—') ? (
+              <>
+                <span className="hero-title-main">{t('hero_title').split('—')[0].trim()}</span>
+                <br />
+                <span className="hero-title-sub" style={{ color: 'var(--text-secondary)' }}>{t('hero_title').split('—')[1].trim()}</span>
+              </>
+            ) : (
+              t('hero_title')
+            )}
+          </h1>
           <p className="hero-desc">{t('hero_desc')}</p>
           <div className="hero-actions">
             <button 

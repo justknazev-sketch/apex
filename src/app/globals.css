@@ -627,17 +627,26 @@ section h2 {
 
 .hero-content h1 {
   font-size: clamp(42px, 7vw, 82px);
-  line-height: 1.0;
+  line-height: 1.1;
   margin-bottom: 28px;
-  background: var(--hero-h1-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   /* Prevent awkward single-word wraps on EN */
   word-break: keep-all;
   overflow-wrap: normal;
 }
 
+.hero-title-main {
+  background: var(--hero-h1-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-title-sub {
+  color: var(--text-primary);
+  font-size: 0.8em;
+  font-weight: 800;
+  -webkit-text-fill-color: var(--text-primary);
+}
 .hero-desc {
   color: var(--text-secondary);
   font-size: 18px;
