@@ -234,7 +234,9 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
             )}
           </div>
           <h1>
-            <span className="hero-brand-kicker">APEX FORCE</span>
+            <span className="hero-brand-kicker">
+              <span className="logo-apex">APEX</span> <span className="logo-force">FORCE</span>
+            </span>
             <span className="hero-main-title">
               {(() => {
                 const raw = t('hero_title');

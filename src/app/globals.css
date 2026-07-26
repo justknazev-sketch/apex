@@ -638,8 +638,15 @@ section h2 {
   font-size: clamp(16px, 2.5vw, 24px);
   font-weight: 900;
   letter-spacing: 6px;
-  color: var(--red);
   margin-bottom: 8px;
+}
+
+.hero-brand-kicker .logo-apex {
+  color: var(--text-primary);
+}
+
+.hero-brand-kicker .logo-force {
+  color: var(--red);
 }
 
 .hero-main-title {
