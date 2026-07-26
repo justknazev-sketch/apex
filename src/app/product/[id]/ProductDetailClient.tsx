@@ -55,7 +55,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const handleBuyNow = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !phone) {
-      alert(language === 'uk' ? 'Заповніть обов\'язкові поля' : language === 'ru' ? 'Заполните обязательные поля' : 'Please fill required fields');
+      alert(t('product_error_empty') === 'product_error_empty' ? 'Заповніть обов\'язкові поля' : t('product_error_empty'));
       return;
     }
 
@@ -84,11 +84,11 @@ export default function ProductDetailClient({ product }: { product: Product }) {
         setName('');
         setPhone('');
       } else {
-        alert(language === 'uk' ? 'Помилка замовлення. Спробуйте ще раз.' : language === 'ru' ? 'Ошибка заказа. Попробуйте еще раз.' : 'Order error. Please try again.');
+        alert(t('product_error_order') === 'product_error_order' ? 'Помилка замовлення. Спробуйте ще раз.' : t('product_error_order'));
       }
     } catch (err) {
       console.error(err);
-      alert(language === 'uk' ? 'Помилка з\'єднання.' : language === 'ru' ? 'Ошибка соединения.' : 'Connection error.');
+      alert(t('product_error_network') === 'product_error_network' ? 'Помилка з\'єднання.' : t('product_error_network'));
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   return (
     <section className="product-detail-page">
       <Link href="/#catalog" className="back-link" style={{ display: 'inline-block', marginBottom: '24px', color: 'var(--red)', fontWeight: '600' }}>
-        ← {language === 'uk' ? 'Назад до каталогу' : language === 'ru' ? 'Назад в каталог' : 'Back to Catalog'}
+        ← {t('product_back_to_catalog') === 'product_back_to_catalog' ? 'Назад до каталогу' : t('product_back_to_catalog')}
       </Link>
 
       <div className="product-detail-grid">
@@ -120,7 +120,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
 
           <div style={{ marginBottom: '32px' }}>
             <h3 style={{ fontSize: '16px', marginBottom: '12px', borderBottom: '1px solid var(--border-light)', paddingBottom: '6px' }}>
-              {language === 'uk' ? 'Характеристики' : language === 'ru' ? 'Характеристики' : 'Specifications'}
+              {t('product_specs') === 'product_specs' ? 'Характеристики' : t('product_specs')}
             </h3>
             <ul className="product-specs-list" style={{ fontSize: '14px', gap: '8px' }}>
               {specs.filter(([sName]) => sName.toLowerCase() !== 'опис').map(([sName, sVal], idx) => (
@@ -131,14 +131,14 @@ export default function ProductDetailClient({ product }: { product: Product }) {
               ))}
               {specs.length === 0 && (
                 <li style={{ color: 'var(--text-muted)' }}>
-                  {language === 'uk' ? 'Опис відсутній' : 'Описание отсутствует'}
+                  {t('product_no_desc') === 'product_no_desc' ? 'Опис відсутній' : t('product_no_desc')}
                 </li>
               )}
             </ul>
             {specs.find(([sName]) => sName.toLowerCase() === 'опис') && (
               <div style={{ marginTop: '24px' }}>
                 <h3 style={{ fontSize: '16px', marginBottom: '12px', borderBottom: '1px solid var(--border-light)', paddingBottom: '6px' }}>
-                  {language === 'uk' ? 'Опис товару' : language === 'ru' ? 'Описание товара' : 'Product Description'}
+                  {t('product_desc_title') === 'product_desc_title' ? 'Опис товару' : t('product_desc_title')}
                 </h3>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
                   {specs.find(([sName]) => sName.toLowerCase() === 'опис')?.[1]}
@@ -161,14 +161,14 @@ export default function ProductDetailClient({ product }: { product: Product }) {
             {success ? (
               <div style={{ textAlign: 'center' }}>
                 <span className="success-icon" style={{ backgroundColor: '#2E7D32', width: '48px', height: '48px', fontSize: '24px' }}>✓</span>
-                <h4 style={{ margin: '12px 0 6px' }}>{language === 'uk' ? 'Дякуємо!' : 'Заявка принята!'}</h4>
+                <h4 style={{ margin: '12px 0 6px' }}>{t('product_fast_success') === 'product_fast_success' ? 'Дякуємо!' : t('product_fast_success')}</h4>
                 <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{t('constructor_form_hint')}</p>
                 <button className="btn-outline" style={{ marginTop: '16px', width: '100%', padding: '10px' }} onClick={() => setSuccess(false)}>ОК</button>
               </div>
             ) : (
               <form onSubmit={handleBuyNow}>
                 <h4 style={{ fontSize: '15px', textTransform: 'uppercase', marginBottom: '16px', fontWeight: '700' }}>
-                  {language === 'uk' ? 'Швидке замовлення / Консультація' : language === 'ru' ? 'Быстрый заказ / Консультация' : 'Fast Order / Callback'}
+                  {t('product_fast_title') === 'product_fast_title' ? 'Швидке замовлення / Консультація' : t('product_fast_title')}
                 </h4>
                 <div className="form-field">
                   <input 
@@ -189,7 +189,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                   />
                 </div>
                 <button type="submit" className="btn-outline" style={{ width: '100%', padding: '12px' }} disabled={loading}>
-                  {loading ? 'Надсилання...' : (language === 'uk' ? 'Передзвонити мені →' : 'Перезвонить мне →')}
+                  {loading ? (t('product_fast_btn_sending') === 'product_fast_btn_sending' ? 'Надсилання...' : t('product_fast_btn_sending')) : (t('product_fast_btn') === 'product_fast_btn' ? 'Передзвонити мені →' : t('product_fast_btn'))}
                 </button>
               </form>
             )}

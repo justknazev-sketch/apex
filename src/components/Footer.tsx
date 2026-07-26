@@ -31,12 +31,12 @@ export default function Footer() {
             <span className="logo-force">FORCE</span>
           </Link>
           <p className="footer-pitch">
-            {pitch[language] || pitch.uk}
+            {t('footer_pitch') === 'footer_pitch' ? pitch[language] || pitch.uk : t('footer_pitch')}
           </p>
         </div>
 
         <div className="footer-copy">
-          {copy[language] || copy.uk}
+          {t('footer_copy') === 'footer_copy' ? copy[language] || copy.uk : t('footer_copy')}
         </div>
 
         <div className="footer-socials">

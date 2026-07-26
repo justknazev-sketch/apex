@@ -31,7 +31,7 @@ export default function CartDrawer() {
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !phone) {
-      alert(language === 'uk' ? 'Будь ласка, заповніть ім\'я та телефон' : language === 'ru' ? 'Пожалуйста, заполните имя и телефон' : 'Please fill name and phone');
+      alert(t('cart_error_empty_fields'));
       return;
     }
 
@@ -71,11 +71,11 @@ export default function CartDrawer() {
         setPhone('');
         setComment('');
       } else {
-        alert('Помилка при створенні замовлення. Спробуйте ще раз.');
+        alert(t('cart_error_submit'));
       }
     } catch (err) {
       console.error(err);
-      alert('Помилка мережі. Перевірте з\'єднання.');
+      alert(t('cart_error_network'));
     } finally {
       setLoading(false);
     }
@@ -95,8 +95,8 @@ export default function CartDrawer() {
         {orderSuccess ? (
           <div className="cart-success-view">
             <div className="success-icon">✓</div>
-            <h3>{t('constructor_form_hint') === 'constructor_form_hint' ? 'Дякуємо! Замовлення прийнято.' : 'Дякуємо за замовлення!'}</h3>
-            <p>{t('constructor_form_hint') === 'constructor_form_hint' ? 'Наш менеджер зв\'яжеться з вами найближчим часом.' : t('constructor_form_hint')}</p>
+            <h3>{t('cart_success_title')}</h3>
+            <p>{t('cart_success_desc')}</p>
             <button 
               className="btn-primary" 
               onClick={() => {
@@ -104,7 +104,7 @@ export default function CartDrawer() {
                 closeCart();
               }}
             >
-              ОК
+              {t('cart_btn_ok')}
             </button>
           </div>
         ) : (
@@ -115,7 +115,7 @@ export default function CartDrawer() {
                   <span className="cart-empty-icon">🛒</span>
                   <div className="cart-empty-title">{t('cart_empty')}</div>
                   <p className="cart-empty-sub">
-                    {t('cart_empty') === 'cart_empty' ? 'Додайте товари з каталогу' : 'Додайте товари з каталогу'}
+                    {t('cart_empty_sub')}
                   </p>
                   <button
                     className="btn-outline"
@@ -127,7 +127,7 @@ export default function CartDrawer() {
                       }, 300);
                     }}
                   >
-                    Перейти до каталогу
+                    {t('cart_btn_catalog')}
                   </button>
                 </div>
               ) : (
@@ -190,46 +190,46 @@ export default function CartDrawer() {
                     />
                   </div>
 
-                  <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>Доставка</div>
+                  <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>{t('cart_delivery_title')}</div>
                   <div className="form-field" style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
                     <label className={`checkout-radio-label ${deliveryMethod === 'novaposhta' ? 'selected' : ''}`} style={{ flex: 1 }}>
                       <input type="radio" value="novaposhta" checked={deliveryMethod === 'novaposhta'} onChange={() => setDeliveryMethod('novaposhta')} />
-                      <FaTruck /> Нова Пошта
+                      <FaTruck /> {t('cart_delivery_np')}
                     </label>
                     <label className={`checkout-radio-label ${deliveryMethod === 'pickup' ? 'selected' : ''}`} style={{ flex: 1 }}>
                       <input type="radio" value="pickup" checked={deliveryMethod === 'pickup'} onChange={() => setDeliveryMethod('pickup')} />
-                      <FaStore /> Самовивіз
+                      <FaStore /> {t('cart_delivery_pickup')}
                     </label>
                   </div>
                   
                   {deliveryMethod === 'novaposhta' && (
                     <>
                       <div className="form-field">
-                        <input type="text" placeholder="Місто (напр. Київ)" value={deliveryCity} onChange={(e) => setDeliveryCity(e.target.value)} required={deliveryMethod === 'novaposhta'} />
+                        <input type="text" placeholder={t('cart_delivery_city')} value={deliveryCity} onChange={(e) => setDeliveryCity(e.target.value)} required={deliveryMethod === 'novaposhta'} />
                       </div>
                       <div className="form-field">
-                        <input type="text" placeholder="Відділення №" value={deliveryWarehouse} onChange={(e) => setDeliveryWarehouse(e.target.value)} required={deliveryMethod === 'novaposhta'} />
+                        <input type="text" placeholder={t('cart_delivery_warehouse')} value={deliveryWarehouse} onChange={(e) => setDeliveryWarehouse(e.target.value)} required={deliveryMethod === 'novaposhta'} />
                       </div>
                     </>
                   )}
 
-                  <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>Оплата</div>
+                  <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>{t('cart_payment_title')}</div>
                   <div className="form-field" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
                     <label className={`checkout-radio-label ${paymentMethod === 'cash' ? 'selected' : ''}`}>
                       <input type="radio" value="cash" checked={paymentMethod === 'cash'} onChange={() => setPaymentMethod('cash')} />
-                      <FaMoneyBillWave /> При отриманні (Накладений платіж)
+                      <FaMoneyBillWave /> {t('cart_payment_cash')}
                     </label>
                     <label className={`checkout-radio-label ${paymentMethod === 'monobank' ? 'selected' : ''}`}>
                       <input type="radio" value="monobank" checked={paymentMethod === 'monobank'} onChange={() => setPaymentMethod('monobank')} />
-                      <FaCreditCard /> Оплата картою (Monobank)
+                      <FaCreditCard /> {t('cart_payment_mono')}
                     </label>
                     <label className={`checkout-radio-label ${paymentMethod === 'liqpay' ? 'selected' : ''}`}>
                       <input type="radio" value="liqpay" checked={paymentMethod === 'liqpay'} onChange={() => setPaymentMethod('liqpay')} />
-                      <FaCreditCard /> Оплата картою (LiqPay / ПриватБанк)
+                      <FaCreditCard /> {t('cart_payment_liqpay')}
                     </label>
                   </div>
                   <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
-                    {loading ? 'Надсилання...' : t('cart_checkout')}
+                    {loading ? t('cart_btn_sending') : t('cart_checkout')}
                   </button>
                 </form>
 
