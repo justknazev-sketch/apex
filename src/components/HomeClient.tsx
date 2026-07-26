@@ -234,20 +234,23 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
             )}
           </div>
           <h1>
-            {(() => {
-              const raw = t('hero_title');
-              const cleanText = raw.replace(/^APEX FORCE\s*[—\-]\s*/i, '').trim();
-              const words = cleanText.split(' ');
-              if (words.length > 1) {
-                const lastWord = words.pop();
-                return (
-                  <>
-                    {words.join(' ')} <span className="hero-title-accent">{lastWord}</span>
-                  </>
-                );
-              }
-              return cleanText;
-            })()}
+            <span className="hero-brand-kicker">APEX FORCE</span>
+            <span className="hero-main-title">
+              {(() => {
+                const raw = t('hero_title');
+                const cleanText = raw.replace(/^APEX FORCE\s*[—\-]\s*/i, '').trim();
+                const words = cleanText.split(' ');
+                if (words.length > 1) {
+                  const lastWord = words.pop();
+                  return (
+                    <>
+                      {words.join(' ')} <span className="hero-title-accent">{lastWord}</span>
+                    </>
+                  );
+                }
+                return cleanText;
+              })()}
+            </span>
           </h1>
           <p className="hero-desc">{t('hero_desc')}</p>
           <div className="hero-actions">
