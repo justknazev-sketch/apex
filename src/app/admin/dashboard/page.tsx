@@ -5,13 +5,11 @@ import { useRouter } from 'next/navigation';
 import ToastContainer from './components/Toast';
 import OrdersTab from './components/OrdersTab';
 import ProductsTab from './components/ProductsTab';
-import ContentTab from './components/ContentTab';
 import ConstructorTab from './components/ConstructorTab';
-import SeoTab from './components/SeoTab';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'content' | 'constructor' | 'seo'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'constructor'>('orders');
 
   const handleLogout = async () => {
     const res = await fetch('/api/auth/logout', { method: 'POST' });
@@ -35,17 +33,13 @@ export default function AdminDashboardPage() {
       <div className="admin-tabs-list">
         <button className={`admin-tab-btn ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}>Заявки</button>
         <button className={`admin-tab-btn ${activeTab === 'products' ? 'active' : ''}`} onClick={() => setActiveTab('products')}>Каталог</button>
-        <button className={`admin-tab-btn ${activeTab === 'content' ? 'active' : ''}`} onClick={() => setActiveTab('content')}>Тексти сайту</button>
         <button className={`admin-tab-btn ${activeTab === 'constructor' ? 'active' : ''}`} onClick={() => setActiveTab('constructor')}>Деталі & Кольори</button>
-        <button className={`admin-tab-btn ${activeTab === 'seo' ? 'active' : ''}`} onClick={() => setActiveTab('seo')}>SEO</button>
       </div>
 
       <div className="admin-pane">
         {activeTab === 'orders' && <OrdersTab />}
         {activeTab === 'products' && <ProductsTab />}
-        {activeTab === 'content' && <ContentTab />}
         {activeTab === 'constructor' && <ConstructorTab />}
-        {activeTab === 'seo' && <SeoTab />}
       </div>
     </div>
   );

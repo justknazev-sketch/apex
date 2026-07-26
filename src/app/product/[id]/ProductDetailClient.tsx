@@ -123,7 +123,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
               {language === 'uk' ? 'Характеристики' : language === 'ru' ? 'Характеристики' : 'Specifications'}
             </h3>
             <ul className="product-specs-list" style={{ fontSize: '14px', gap: '8px' }}>
-              {specs.map(([sName, sVal], idx) => (
+              {specs.filter(([sName]) => sName.toLowerCase() !== 'опис').map(([sName, sVal], idx) => (
                 <li key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px dashed #222' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>{sName}</span>
                   <span style={{ fontWeight: '600' }}>{sVal}</span>
@@ -135,6 +135,16 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                 </li>
               )}
             </ul>
+            {specs.find(([sName]) => sName.toLowerCase() === 'опис') && (
+              <div style={{ marginTop: '24px' }}>
+                <h3 style={{ fontSize: '16px', marginBottom: '12px', borderBottom: '1px solid var(--border-light)', paddingBottom: '6px' }}>
+                  {language === 'uk' ? 'Опис товару' : language === 'ru' ? 'Описание товара' : 'Product Description'}
+                </h3>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
+                  {specs.find(([sName]) => sName.toLowerCase() === 'опис')?.[1]}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Add to Cart button */}

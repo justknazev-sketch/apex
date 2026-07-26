@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { FaTruck, FaStore, FaMoneyBillWave, FaCreditCard } from 'react-icons/fa';
 
 export default function CartDrawer() {
   const { 
@@ -20,6 +21,10 @@ export default function CartDrawer() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [comment, setComment] = useState('');
+  const [deliveryMethod, setDeliveryMethod] = useState('novaposhta');
+  const [deliveryCity, setDeliveryCity] = useState('');
+  const [deliveryWarehouse, setDeliveryWarehouse] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
   const [loading, setLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
 
@@ -51,7 +56,11 @@ export default function CartDrawer() {
           name,
           phone,
           comment,
-          detailsJson: JSON.stringify(orderDetails)
+          detailsJson: JSON.stringify(orderDetails),
+          deliveryMethod,
+          deliveryCity: deliveryMethod === 'novaposhta' ? deliveryCity : null,
+          deliveryWarehouse: deliveryMethod === 'novaposhta' ? deliveryWarehouse : null,
+          paymentMethod
         })
       });
 
@@ -179,6 +188,45 @@ export default function CartDrawer() {
                       onChange={(e) => setComment(e.target.value)}
                       rows={2}
                     />
+                  </div>
+
+                  <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>Доставка</div>
+                  <div className="form-field" style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+                    <label className={`checkout-radio-label ${deliveryMethod === 'novaposhta' ? 'selected' : ''}`} style={{ flex: 1 }}>
+                      <input type="radio" value="novaposhta" checked={deliveryMethod === 'novaposhta'} onChange={() => setDeliveryMethod('novaposhta')} />
+                      <FaTruck /> Нова Пошта
+                    </label>
+                    <label className={`checkout-radio-label ${deliveryMethod === 'pickup' ? 'selected' : ''}`} style={{ flex: 1 }}>
+                      <input type="radio" value="pickup" checked={deliveryMethod === 'pickup'} onChange={() => setDeliveryMethod('pickup')} />
+                      <FaStore /> Самовивіз
+                    </label>
+                  </div>
+                  
+                  {deliveryMethod === 'novaposhta' && (
+                    <>
+                      <div className="form-field">
+                        <input type="text" placeholder="Місто (напр. Київ)" value={deliveryCity} onChange={(e) => setDeliveryCity(e.target.value)} required={deliveryMethod === 'novaposhta'} />
+                      </div>
+                      <div className="form-field">
+                        <input type="text" placeholder="Відділення №" value={deliveryWarehouse} onChange={(e) => setDeliveryWarehouse(e.target.value)} required={deliveryMethod === 'novaposhta'} />
+                      </div>
+                    </>
+                  )}
+
+                  <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>Оплата</div>
+                  <div className="form-field" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+                    <label className={`checkout-radio-label ${paymentMethod === 'cash' ? 'selected' : ''}`}>
+                      <input type="radio" value="cash" checked={paymentMethod === 'cash'} onChange={() => setPaymentMethod('cash')} />
+                      <FaMoneyBillWave /> При отриманні (Накладений платіж)
+                    </label>
+                    <label className={`checkout-radio-label ${paymentMethod === 'monobank' ? 'selected' : ''}`}>
+                      <input type="radio" value="monobank" checked={paymentMethod === 'monobank'} onChange={() => setPaymentMethod('monobank')} />
+                      <FaCreditCard /> Оплата картою (Monobank)
+                    </label>
+                    <label className={`checkout-radio-label ${paymentMethod === 'liqpay' ? 'selected' : ''}`}>
+                      <input type="radio" value="liqpay" checked={paymentMethod === 'liqpay'} onChange={() => setPaymentMethod('liqpay')} />
+                      <FaCreditCard /> Оплата картою (LiqPay / ПриватБанк)
+                    </label>
                   </div>
                   <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
                     {loading ? 'Надсилання...' : t('cart_checkout')}

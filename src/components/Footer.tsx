@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
+import { FaViber, FaTelegramPlane, FaInstagram, FaTiktok } from 'react-icons/fa';
 
 export default function Footer() {
   const { language } = useLanguage();
@@ -41,22 +42,22 @@ export default function Footer() {
         <div className="footer-socials">
           {/* Viber */}
           <a href="viber://chat?number=%2B380733730110" className="social-btn viber" aria-label="Viber" title="Viber +380733730110">
-            <span>Viber</span>
+            <FaViber size={18} />
           </a>
           
           {/* Telegram */}
           <a href="https://t.me/+380733730110" target="_blank" rel="noopener noreferrer" className="social-btn telegram" aria-label="Telegram" title="Telegram Channel">
-            <span>Telegram</span>
+            <FaTelegramPlane size={18} />
           </a>
 
           {/* Instagram */}
           <a href="https://instagram.com/apexforce_vs" target="_blank" rel="noopener noreferrer" className="social-btn instagram" aria-label="Instagram" title="Instagram apexforce_vs">
-            <span>Instagram</span>
+            <FaInstagram size={18} />
           </a>
 
           {/* TikTok */}
           <a href="https://vm.tiktok.com/ZS9jaeKtFgwd4-f3Lsx/" target="_blank" rel="noopener noreferrer" className="social-btn tiktok" aria-label="TikTok" title="TikTok Profile">
-            <span>TikTok</span>
+            <FaTiktok size={18} />
           </a>
         </div>
       </div>

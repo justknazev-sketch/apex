@@ -39,7 +39,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="main-content">
+    <>
       <div className="admin-login-wrapper">
         <h2>Вхід в адмін-панель</h2>
         {error && (
@@ -73,6 +73,6 @@ export default function AdminLoginPage() {
           </button>
         </form>
       </div>
-    </div>
+    </>
   );
 }

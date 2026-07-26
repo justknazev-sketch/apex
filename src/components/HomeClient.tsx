@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
+import { FaPhoneAlt, FaViber, FaTelegramPlane, FaInstagram, FaTiktok } from 'react-icons/fa';
 
 interface Product {
   id: number;
@@ -37,13 +38,22 @@ interface ColorPreset {
   nameEn: string;
 }
 
+interface Category {
+  id: string;
+  nameUk: string;
+  nameRu: string;
+  nameEn: string;
+  order: number;
+}
+
 interface HomeClientProps {
   initialProducts: Product[];
   initialParts: ConstructorPart[];
   initialColors: ColorPreset[];
+  initialCategories: Category[];
 }
 
-export default function HomeClient({ initialProducts, initialParts, initialColors }: HomeClientProps) {
+export default function HomeClient({ initialProducts, initialParts, initialColors, initialCategories }: HomeClientProps) {
   const { t, language } = useLanguage();
   const { addToCart, cart } = useCart();
   const router = useRouter();
@@ -103,7 +113,7 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
       });
     }
 
-    Promise.resolve().then(() => setFilteredProducts(result));
+    setFilteredProducts(result);
   }, [activeTab, searchQuery, products, language]);
 
   // Constructor actions
@@ -250,11 +260,11 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
         {/* Tab filters */}
         <div className="category-tabs">
           <button className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>{t('catalog_tab_all')}</button>
-          <button className={`tab-btn ${activeTab === 'street' ? 'active' : ''}`} onClick={() => setActiveTab('street')}>{t('catalog_tab_street')}</button>
-          <button className={`tab-btn ${activeTab === 'turnik' ? 'active' : ''}`} onClick={() => setActiveTab('turnik')}>{t('catalog_tab_turnik')}</button>
-          <button className={`tab-btn ${activeTab === 'ruckhod' ? 'active' : ''}`} onClick={() => setActiveTab('ruckhod')}>{t('catalog_tab_ruckhod')}</button>
-          <button className={`tab-btn ${activeTab === 'workout' ? 'active' : ''}`} onClick={() => setActiveTab('workout')}>{t('catalog_tab_workout')}</button>
-          <button className={`tab-btn ${activeTab === 'swedish' ? 'active' : ''}`} onClick={() => setActiveTab('swedish')}>{t('catalog_tab_swedish')}</button>
+          {initialCategories.map(c => (
+            <button key={c.id} className={`tab-btn ${activeTab === c.id ? 'active' : ''}`} onClick={() => setActiveTab(c.id)}>
+              {getLocalizedName(c)}
+            </button>
+          ))}
         </div>
 
         {/* Products listings */}
@@ -297,8 +307,13 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                         {getLocalizedName(p)}
                       </span>
                     </h3>
+                    {specs.find(([n]) => n.toLowerCase() === 'опис') && (
+                      <p style={{ fontSize: '12px', color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '8px', lineHeight: '1.4' }}>
+                        {specs.find(([n]) => n.toLowerCase() === 'опис')?.[1]}
+                      </p>
+                    )}
                     <ul className="product-specs-list">
-                      {specs.slice(0, 3).map(([name, val], idx) => (
+                      {specs.filter(([n]) => n.toLowerCase() !== 'опис').slice(0, 3).map(([name, val], idx) => (
                         <li key={idx}>
                           <span className="spec-name">{name}:</span>
                           <span className="spec-val">{val}</span>
@@ -523,22 +538,23 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
             <h2>{t('contact_title')}</h2>
             <p className="section-desc" style={{ marginBottom: '30px' }}>{t('contact_desc')}</p>
             
-            <div className="contact-channels-list">
-              <a href="tel:+380733730110" className="contact-channel-btn phone-btn">
-                <span>📞 +38 (073) 373-01-10</span>
+            <div className="contact-main-action">
+              <p className="contact-main-label">{t('constructor_form_hint') === 'constructor_form_hint' ? 'Швидкий зв\'язок / Быстрая связь:' : 'Швидкий зв\'язок:'}</p>
+              <a href="tel:+380733730110" className="contact-huge-phone">
+                <div className="phone-icon-pulse">
+                  <FaPhoneAlt size={24} />
+                </div>
+                <span>+38 (073) 373-01-10</span>
               </a>
-              <a href="viber://chat?number=%2B380733730110" className="contact-channel-btn viber-btn">
-                <span>💬 Viber: +380733730110</span>
-              </a>
-              <a href="https://t.me/+380733730110" target="_blank" rel="noopener noreferrer" className="contact-channel-btn telegram-btn">
-                <span>✈️ Telegram Channel</span>
-              </a>
-              <a href="https://instagram.com/apexforce_vs" target="_blank" rel="noopener noreferrer" className="contact-channel-btn instagram-btn">
-                <span>📸 Instagram: @apexforce_vs</span>
-              </a>
-              <a href="https://vm.tiktok.com/ZS9jaeKtFgwd4-f3Lsx/" target="_blank" rel="noopener noreferrer" className="contact-channel-btn tiktok-btn">
-                <span>🎵 TikTok: apexforce_vs</span>
-              </a>
+              
+              <div className="contact-messengers-row">
+                <a href="viber://chat?number=%2B380733730110" className="messenger-pill viber" aria-label="Viber">
+                  <FaViber size={18} /> Viber
+                </a>
+                <a href="https://t.me/+380733730110" target="_blank" rel="noopener noreferrer" className="messenger-pill telegram" aria-label="Telegram">
+                  <FaTelegramPlane size={18} /> Telegram
+                </a>
+              </div>
             </div>
           </div>
 

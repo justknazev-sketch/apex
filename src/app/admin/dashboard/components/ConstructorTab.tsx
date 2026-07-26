@@ -32,7 +32,7 @@ export default function ConstructorTab() {
   };
 
   useEffect(() => {
-    Promise.resolve().then(() => loadConstructor());
+    loadConstructor();
   }, []);
 
   const handleUpdatePartPrice = async (id: string, price: number, nameUk: string, nameRu: string, nameEn: string, icon: string) => {

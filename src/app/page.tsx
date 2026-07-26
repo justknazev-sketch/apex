@@ -15,6 +15,10 @@ export default async function HomePage() {
   });
 
   const colors = await prisma.color.findMany();
+  
+  const categories = await prisma.productCategory.findMany({
+    orderBy: { order: 'asc' },
+  });
 
   // Приведение типов для безопасной передачи в клиентский компонент
   const formattedProducts = products.map(p => ({
@@ -47,11 +51,20 @@ export default async function HomePage() {
     nameEn: c.nameEn,
   }));
 
+  const formattedCategories = categories.map(c => ({
+    id: c.id,
+    nameUk: c.nameUk,
+    nameRu: c.nameRu,
+    nameEn: c.nameEn,
+    order: c.order,
+  }));
+
   return (
     <HomeClient 
       initialProducts={formattedProducts}
       initialParts={formattedParts}
       initialColors={formattedColors}
+      initialCategories={formattedCategories}
     />
   );
 }

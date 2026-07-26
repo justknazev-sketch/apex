@@ -7,6 +7,7 @@ import { CartProvider } from '@/context/CartContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
+import { cookies } from 'next/headers';
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -22,7 +23,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#121212',
+  themeColor: '#FFFFFF',
 };
 
 export const metadata: Metadata = {
@@ -52,7 +53,6 @@ export const metadata: Metadata = {
   }
 };
 
-import { cookies } from 'next/headers';
 
 export default async function RootLayout({
   children,
@@ -63,15 +63,7 @@ export default async function RootLayout({
   const lang = cookieStore.get('NEXT_LOCALE')?.value || 'uk';
 
   return (
-    <html lang={lang} className={`${inter.variable} ${outfit.variable}`}>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: `
-          (function() {
-            var theme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', theme);
-          })()
-        `}} />
-      </head>
+    <html lang={lang} className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
       <body>
         <LanguageProvider>
           <CartProvider>

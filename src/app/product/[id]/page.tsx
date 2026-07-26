@@ -49,7 +49,21 @@ export default async function ProductPage(props: Props) {
     notFound();
   }
 
+  const serializedProduct = {
+    id: product.id,
+    category: product.category,
+    nameUk: product.nameUk,
+    nameRu: product.nameRu,
+    nameEn: product.nameEn,
+    price: product.price,
+    badgeUk: product.badgeUk,
+    badgeRu: product.badgeRu,
+    badgeEn: product.badgeEn,
+    specsJson: product.specsJson,
+    photo: product.photo || undefined,
+  };
+
   return (
-    <ProductDetailClient product={product} />
+    <ProductDetailClient product={serializedProduct} />
   );
 }

@@ -33,6 +33,15 @@ model Product {
   updatedAt DateTime @updatedAt
 }
 
+model ProductCategory {
+  id        String   @id // e.g. "street", "turnik"
+  nameUk    String
+  nameRu    String
+  nameEn    String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
 model ConstructorElement {
   id     String @id // e.g. "turnik", "swedish", "brusy", "press", "lava", "rope"
   nameUk String
@@ -50,14 +59,25 @@ model Color {
 }
 
 model Order {
-  id          Int      @id @default(autoincrement())
-  type        String   // callback, order, customizer
-  name        String
-  phone       String
-  comment     String?
-  detailsJson String   // JSON string with selected items/colors or product bought
-  status      String   @default("new") // new, in_progress, done
-  createdAt   DateTime @default(now())
+  id                Int      @id @default(autoincrement())
+  type              String   // callback, order, customizer
+  name              String
+  phone             String
+  comment           String?
+  detailsJson       String   // JSON string with selected items/colors or product bought
+  status            String   @default("new") // new, in_progress, done
+  
+  // Delivery details
+  deliveryMethod    String   @default("pickup") // pickup, novaposhta
+  deliveryCity      String?
+  deliveryWarehouse String?
+  
+  // Payment details
+  paymentMethod     String   @default("cash") // cash, monobank, liqpay
+  paymentStatus     String   @default("pending") // pending, paid, failed
+  paymentId         String?  // Invoice ID from payment provider
+  
+  createdAt         DateTime @default(now())
 }
 
 model ContentText {

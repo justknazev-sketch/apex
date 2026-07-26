@@ -51,3 +51,9 @@ next-env.d.ts
 *.db-journal
 *.db-shm
 *.db-wal
+
+# media assets (raw source files from client)
+/media/
+
+# temp scripts
+seed-*.js

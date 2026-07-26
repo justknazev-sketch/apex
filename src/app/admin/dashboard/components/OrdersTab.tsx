@@ -23,7 +23,7 @@ export default function OrdersTab() {
   };
 
   useEffect(() => {
-    Promise.resolve().then(() => loadOrders());
+    loadOrders();
   }, []);
 
   const handleUpdateOrderStatus = async (id: number, status: string) => {

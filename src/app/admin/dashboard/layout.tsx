@@ -14,10 +14,10 @@ export default async function AdminDashboardLayout({
   }
 
   return (
-    <div className="main-content">
+    <>
       <div className="admin-layout-container">
         {children}
       </div>
-    </div>
+    </>
   );
 }

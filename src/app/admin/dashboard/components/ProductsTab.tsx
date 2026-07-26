@@ -3,38 +3,47 @@
 import React, { useState, useEffect } from 'react';
 import { Product, EmptyState, LoadingSpinner } from './Shared';
 import { showToast, useConfirm } from './Toast';
+import CategoriesManager, { Category } from './CategoriesManager';
 
 export default function ProductsTab() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<string>('all');
   
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCatManagerOpen, setIsCatManagerOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [productForm, setProductForm] = useState({
-    category: 'street', nameUk: '', nameRu: '', nameEn: '', 
+    category: '', nameUk: '', nameRu: '', nameEn: '', 
     price: '', badgeUk: '', badgeRu: '', badgeEn: '', photo: ''
   });
-  const [productSpecs, setProductSpecs] = useState<[string, string][]>([['', '']]);
+  const [specsText, setSpecsText] = useState('');
+  const [descriptionText, setDescriptionText] = useState('');
   const [adminLang, setAdminLang] = useState<'uk' | 'ru' | 'en'>('uk');
   
   const { confirm, dialog } = useConfirm();
 
-  const loadProducts = async () => {
+  const loadData = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/products');
-      if (res.ok) setProducts(await res.json());
-      else showToast('Помилка завантаження товарів', 'error');
+      const [resProd, resCat] = await Promise.all([
+        fetch('/api/products'),
+        fetch('/api/categories')
+      ]);
+      
+      if (resProd.ok) setProducts(await resProd.json());
+      if (resCat.ok) setCategories(await resCat.json());
     } catch (e) {
-      showToast('Помилка мережі', 'error');
+      showToast('Помилка завантаження даних', 'error');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    Promise.resolve().then(() => loadProducts());
+    loadData();
   }, []);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,19 +75,15 @@ export default function ProductsTab() {
     }
   };
 
-  const addSpecField = () => setProductSpecs(prev => [...prev, ['', '']]);
-  const removeSpecField = (idx: number) => setProductSpecs(prev => prev.filter((_, i) => i !== idx));
-  const updateSpecField = (idx: number, isValue: boolean, val: string) => {
-    setProductSpecs(prev => prev.map((item, i) => {
-      if (i !== idx) return item;
-      return isValue ? [item[0], val] : [val, item[1]];
-    }));
-  };
-
   const openAddModal = () => {
     setEditingProduct(null);
-    setProductForm({ category: 'street', nameUk: '', nameRu: '', nameEn: '', price: '', badgeUk: '', badgeRu: '', badgeEn: '', photo: '' });
-    setProductSpecs([['', '']]);
+    const defCat = activeCategory === 'all' && categories.length > 0 ? categories[0].id : activeCategory;
+    setProductForm({ 
+      category: defCat, 
+      nameUk: '', nameRu: '', nameEn: '', price: '', badgeUk: '', badgeRu: '', badgeEn: '', photo: '' 
+    });
+    setSpecsText('');
+    setDescriptionText('');
     setIsModalOpen(true);
   };
 
@@ -95,21 +100,47 @@ export default function ProductsTab() {
       badgeEn: product.badgeEn || '',
       photo: product.photo || '',
     });
+    
+    // Parse specs back to textarea format and separate description
     try {
-      setProductSpecs(JSON.parse(product.specsJson));
+      const parsed = JSON.parse(product.specsJson) as [string, string][];
+      const descItem = parsed.find(([k]) => k.toLowerCase() === 'опис');
+      const specsItems = parsed.filter(([k]) => k.toLowerCase() !== 'опис');
+      
+      setSpecsText(specsItems.map(([k, v]) => v ? `${k}: ${v}` : k).join('\n'));
+      setDescriptionText(descItem ? descItem[1] : '');
     } catch (e) {
-      setProductSpecs([['', '']]);
+      setSpecsText('');
+      setDescriptionText('');
     }
     setIsModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const specsFiltered = productSpecs.filter(([name]) => name.trim() !== '');
+    
+    // Convert specs lines to JSON array of tuples
+    let specsArray = specsText
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.length > 0)
+      .map(line => {
+        const splitIndex = line.indexOf(':');
+        if (splitIndex === -1) return [line, ''];
+        return [
+          line.substring(0, splitIndex).trim(),
+          line.substring(splitIndex + 1).trim()
+        ] as [string, string];
+      });
+
+    if (descriptionText.trim()) {
+      specsArray.push(['Опис', descriptionText.trim()]);
+    }
+
     const body = {
       ...productForm,
       price: Number(productForm.price),
-      specsJson: JSON.stringify(specsFiltered)
+      specsJson: JSON.stringify(specsArray)
     };
 
     const url = editingProduct ? `/api/products/${editingProduct.id}` : '/api/products';
@@ -124,7 +155,7 @@ export default function ProductsTab() {
       if (res.ok) {
         showToast(`Товар ${editingProduct ? 'оновлено' : 'додано'}`);
         setIsModalOpen(false);
-        loadProducts();
+        loadData();
       } else {
         showToast('Помилка при збереженні товару', 'error');
       }
@@ -139,7 +170,7 @@ export default function ProductsTab() {
         const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
         if (res.ok) {
           showToast('Товар видалено');
-          loadProducts();
+          loadData();
         } else {
           showToast('Помилка видалення', 'error');
         }
@@ -151,18 +182,38 @@ export default function ProductsTab() {
 
   if (loading && products.length === 0) return <LoadingSpinner text="Завантаження каталогу..." />;
 
+  const filteredProducts = activeCategory === 'all' 
+    ? products 
+    : products.filter(p => p.category === activeCategory);
+
   return (
     <div>
       {dialog}
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-        <h3 style={{ color: 'var(--text-primary)', fontSize: '18px' }}>Товари в каталозі</h3>
-        <button className="btn-primary" style={{ padding: '10px 20px', fontSize: '13px' }} onClick={openAddModal}>
-          + Додати товар
-        </button>
+      {isCatManagerOpen && <CategoriesManager onClose={() => setIsCatManagerOpen(false)} onUpdate={loadData} />}
+      
+      <div className="admin-category-filters">
+        <button className={`admin-cat-btn ${activeCategory === 'all' ? 'active' : ''}`} onClick={() => setActiveCategory('all')}>Всі товари</button>
+        {categories.map(c => (
+          <button key={c.id} className={`admin-cat-btn ${activeCategory === c.id ? 'active' : ''}`} onClick={() => setActiveCategory(c.id)}>
+            {c.nameUk}
+          </button>
+        ))}
       </div>
 
-      {products.length === 0 ? (
-        <EmptyState icon="📦" title="Немає товарів" subtitle="Додайте перший товар до каталогу" />
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', alignItems: 'center' }}>
+        <h3 style={{ color: 'var(--text-primary)', fontSize: '18px' }}>Товари в каталозі ({filteredProducts.length})</h3>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button className="btn-outline" style={{ padding: '10px 20px', fontSize: '13px' }} onClick={() => setIsCatManagerOpen(true)}>
+            ⚙️ Управління категоріями
+          </button>
+          <button className="btn-primary" style={{ padding: '10px 20px', fontSize: '13px' }} onClick={openAddModal}>
+            + Додати товар
+          </button>
+        </div>
+      </div>
+
+      {filteredProducts.length === 0 ? (
+        <EmptyState icon="📦" title="Немає товарів у цій категорії" subtitle="Створіть перший товар" />
       ) : (
         <div className="admin-table-container">
           <table className="admin-table">
@@ -177,7 +228,7 @@ export default function ProductsTab() {
               </tr>
             </thead>
             <tbody>
-              {products.map(p => (
+              {filteredProducts.map(p => (
                 <tr key={p.id}>
                   <td>
                     {p.photo ? (
@@ -205,74 +256,99 @@ export default function ProductsTab() {
 
       {isModalOpen && (
         <div className="admin-modal-overlay">
-          <div className="admin-modal-card">
+          <div className="admin-modal-card admin-modal-card-large">
             <div className="admin-modal-header">{editingProduct ? 'Редагувати товар' : 'Додати товар'}</div>
             <form onSubmit={handleSubmit}>
-              <div className="form-field">
-                <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Категорія</label>
-                <select value={productForm.category} onChange={(e) => setProductForm(prev => ({ ...prev, category: e.target.value }))}>
-                  <option value="street">Вуличні комплекси</option>
-                  <option value="turnik">Турніки</option>
-                  <option value="ruckhod">Рукоходи</option>
-                  <option value="workout">Воркаут</option>
-                  <option value="swedish">Шведські стінки</option>
-                </select>
-              </div>
-
-              <div className="admin-lang-tabs">
-                <button type="button" className={`admin-lang-tab uk ${adminLang === 'uk' ? 'active' : ''}`} onClick={() => setAdminLang('uk')}>Українська (Основна)</button>
-                <button type="button" className={`admin-lang-tab ru ${adminLang === 'ru' ? 'active' : ''}`} onClick={() => setAdminLang('ru')}>Русский</button>
-                <button type="button" className={`admin-lang-tab en ${adminLang === 'en' ? 'active' : ''}`} onClick={() => setAdminLang('en')}>English</button>
-              </div>
-
-              {adminLang === 'uk' && (
-                <>
-                  <div className="form-field"><input type="text" placeholder="Назва (Українська)*" value={productForm.nameUk} onChange={(e) => setProductForm(prev => ({ ...prev, nameUk: e.target.value }))} required /></div>
-                  <div className="form-field"><input type="text" placeholder="Плашка (напр. 'Хіт', не обов'язково)" value={productForm.badgeUk} onChange={(e) => setProductForm(prev => ({ ...prev, badgeUk: e.target.value }))} /></div>
-                </>
-              )}
-              {adminLang === 'ru' && (
-                <>
-                  <div className="form-field"><input type="text" placeholder="Название (Русский)" value={productForm.nameRu} onChange={(e) => setProductForm(prev => ({ ...prev, nameRu: e.target.value }))} /></div>
-                  <div className="form-field"><input type="text" placeholder="Плашка (напр. 'Хит', не обязательно)" value={productForm.badgeRu} onChange={(e) => setProductForm(prev => ({ ...prev, badgeRu: e.target.value }))} /></div>
-                </>
-              )}
-              {adminLang === 'en' && (
-                <>
-                  <div className="form-field"><input type="text" placeholder="Name (English)" value={productForm.nameEn} onChange={(e) => setProductForm(prev => ({ ...prev, nameEn: e.target.value }))} /></div>
-                  <div className="form-field"><input type="text" placeholder="Badge (e.g. 'Bestseller', optional)" value={productForm.badgeEn} onChange={(e) => setProductForm(prev => ({ ...prev, badgeEn: e.target.value }))} /></div>
-                </>
-              )}
-
-              <div className="form-field" style={{ marginTop: '16px' }}>
-                <input type="number" placeholder="Ціна (₴)*" value={productForm.price} onChange={(e) => setProductForm(prev => ({ ...prev, price: e.target.value }))} required />
-              </div>
-
-              <div className="form-field">
-                <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Фотографія товару</label>
-                <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ border: 'none', background: 'none', paddingLeft: 0 }} disabled={isUploadingPhoto} />
-                {isUploadingPhoto && <div style={{ fontSize: '12px', color: 'var(--border-focus)', marginTop: '6px' }}>Завантаження фото на Cloudinary...</div>}
-                {productForm.photo && !isUploadingPhoto && (
-                  <div style={{ marginTop: '10px' }}><img src={productForm.photo} alt="Uploaded product preview" style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #333' }} /></div>
-                )}
-              </div>
-
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Характеристики (Динамічні поля)</label>
-                {productSpecs.map((spec, index) => (
-                  <div key={index} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
-                    <input type="text" placeholder="Назва (напр. Колір)" value={spec[0]} onChange={(e) => updateSpecField(index, false, e.target.value)} style={{ background: 'var(--bg-input)', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '10px', borderRadius: '6px', fontSize: '13px', outline: 'none', flex: 1 }} />
-                    <input type="text" placeholder="Значення (напр. Червоний)" value={spec[1]} onChange={(e) => updateSpecField(index, true, e.target.value)} style={{ background: 'var(--bg-input)', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '10px', borderRadius: '6px', fontSize: '13px', outline: 'none', flex: 1.5 }} />
-                    <button type="button" onClick={() => removeSpecField(index)} style={{ background: 'none', border: 'none', color: 'var(--red)', fontSize: '20px', cursor: 'pointer' }}>&times;</button>
+              <div className="admin-modal-grid">
+                
+                {/* Column 1: Main Info */}
+                <div>
+                  <div className="form-field">
+                    <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Фотографія товару</label>
+                    <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ border: 'none', background: 'none', paddingLeft: 0 }} disabled={isUploadingPhoto} />
+                    {isUploadingPhoto && <div style={{ fontSize: '12px', color: 'var(--border-focus)', marginTop: '6px' }}>Завантаження фото на Cloudinary...</div>}
+                    {productForm.photo && !isUploadingPhoto && (
+                      <div style={{ marginTop: '10px' }}><img src={productForm.photo} alt="Uploaded product preview" style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border-light)' }} /></div>
+                    )}
                   </div>
-                ))}
-                <button type="button" className="btn-outline" onClick={addSpecField} style={{ padding: '6px 12px', fontSize: '12px', marginTop: '6px' }}>+ Додати характеристику</button>
+                  
+                  <div className="form-field">
+                    <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Категорія</label>
+                    <select value={productForm.category} onChange={(e) => setProductForm(prev => ({ ...prev, category: e.target.value }))}>
+                      {categories.map(c => (
+                        <option key={c.id} value={c.id}>{c.nameUk}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="form-field">
+                    <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Ціна (₴)*</label>
+                    <input type="number" placeholder="Ціна (₴)" value={productForm.price} onChange={(e) => setProductForm(prev => ({ ...prev, price: e.target.value }))} required />
+                  </div>
+                </div>
+
+                {/* Column 2: Translations and Specs */}
+                <div>
+                  <div className="admin-lang-tabs">
+                    <button type="button" className={`admin-lang-tab uk ${adminLang === 'uk' ? 'active' : ''}`} onClick={() => setAdminLang('uk')}>Українська (Основна)</button>
+                    <button type="button" className={`admin-lang-tab ru ${adminLang === 'ru' ? 'active' : ''}`} onClick={() => setAdminLang('ru')}>Русский</button>
+                    <button type="button" className={`admin-lang-tab en ${adminLang === 'en' ? 'active' : ''}`} onClick={() => setAdminLang('en')}>English</button>
+                  </div>
+
+                  {adminLang === 'uk' && (
+                    <>
+                      <div className="form-field"><input type="text" placeholder="Назва (Українська)*" value={productForm.nameUk} onChange={(e) => setProductForm(prev => ({ ...prev, nameUk: e.target.value }))} required /></div>
+                      <div className="form-field"><input type="text" placeholder="Плашка (напр. 'Хіт', не обов'язково)" value={productForm.badgeUk} onChange={(e) => setProductForm(prev => ({ ...prev, badgeUk: e.target.value }))} /></div>
+                    </>
+                  )}
+                  {adminLang === 'ru' && (
+                    <>
+                      <div className="form-field"><input type="text" placeholder="Название (Русский)" value={productForm.nameRu} onChange={(e) => setProductForm(prev => ({ ...prev, nameRu: e.target.value }))} /></div>
+                      <div className="form-field"><input type="text" placeholder="Плашка (напр. 'Хит', не обязательно)" value={productForm.badgeRu} onChange={(e) => setProductForm(prev => ({ ...prev, badgeRu: e.target.value }))} /></div>
+                    </>
+                  )}
+                  {adminLang === 'en' && (
+                    <>
+                      <div className="form-field"><input type="text" placeholder="Name (English)" value={productForm.nameEn} onChange={(e) => setProductForm(prev => ({ ...prev, nameEn: e.target.value }))} /></div>
+                      <div className="form-field"><input type="text" placeholder="Badge (e.g. 'Bestseller', optional)" value={productForm.badgeEn} onChange={(e) => setProductForm(prev => ({ ...prev, badgeEn: e.target.value }))} /></div>
+                    </>
+                  )}
+                  
+                  <div className="form-field" style={{ marginTop: '16px' }}>
+                    <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
+                      Характеристики (по одній на рядок)
+                    </label>
+                    <textarea 
+                      placeholder={"Колір: Чорний\nПрофіль труби: 40х40 мм\nМаксимальне навантаження: 150 кг"}
+                      value={specsText}
+                      onChange={(e) => setSpecsText(e.target.value)}
+                      rows={5}
+                      style={{ resize: 'vertical' }}
+                    />
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>
+                      Вводьте кожну характеристику з нового рядка через двокрапку.
+                    </div>
+                  </div>
+
+                  <div className="form-field" style={{ marginTop: '16px' }}>
+                    <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
+                      Опис товару
+                    </label>
+                    <textarea 
+                      placeholder="Найкращий турнік для занять вдома. Надійна конструкція..."
+                      value={descriptionText}
+                      onChange={(e) => setDescriptionText(e.target.value)}
+                      rows={5}
+                      style={{ resize: 'vertical' }}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="admin-modal-actions">
                 <button type="button" className="btn-outline" onClick={() => setIsModalOpen(false)} style={{ padding: '10px 20px', fontSize: '13px' }}>Скасувати</button>
                 <button type="submit" className="btn-primary" style={{ padding: '10px 20px', fontSize: '13px' }} disabled={isUploadingPhoto}>
-                  {isUploadingPhoto ? 'Завантаження фото...' : 'Зберегти'}
+                  {isUploadingPhoto ? 'Завантаження фото...' : 'Зберегти товар'}
                 </button>
               </div>
             </form>

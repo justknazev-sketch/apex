@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { type, name, phone, comment, detailsJson } = body;
+    const { type, name, phone, comment, detailsJson, deliveryMethod, deliveryCity, deliveryWarehouse, paymentMethod } = body;
 
     // Валидация обязательных полей
     if (!type || !name || !phone) {
@@ -87,6 +87,11 @@ export async function POST(request: Request) {
         comment: trimmedComment,
         detailsJson: detailsJson || '{}',
         status: 'new',
+        deliveryMethod: deliveryMethod || 'pickup',
+        deliveryCity: deliveryCity || null,
+        deliveryWarehouse: deliveryWarehouse || null,
+        paymentMethod: paymentMethod || 'cash',
+        paymentStatus: 'pending',
       },
     });
 

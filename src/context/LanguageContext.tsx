@@ -49,11 +49,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     // 2. Check saved language preference
     const savedLang = localStorage.getItem('apex_language') as Language | null;
     if (savedLang && ['uk', 'ru', 'en'].includes(savedLang)) {
-      Promise.resolve().then(() => setLanguageState(savedLang));
+      setLanguageState(savedLang);
       setCookie('NEXT_LOCALE', savedLang);
     } else {
       // Force language chooser modal on first visit
-      Promise.resolve().then(() => setShowModal(true));
+      setShowModal(true);
     }
   }, []);
 
