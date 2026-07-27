@@ -444,52 +444,35 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
               </div>
 
               {/* Step 2.1: Group Category Tabs */}
-              <div className="ral-group-tabs-bar" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', margin: '12px 0' }}>
+              <div className="ral-group-tabs-bar">
                 <button 
                   className={`ral-group-tab-btn ${selectedRalGroup === 'all' ? 'active' : ''}`}
                   onClick={() => setSelectedRalGroup('all')}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    border: '1px solid var(--border-light)',
-                    background: selectedRalGroup === 'all' ? 'var(--red)' : 'var(--bg-dark)',
-                    color: selectedRalGroup === 'all' ? '#fff' : 'var(--text-secondary)',
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
                 >
-                  🌈 Всі ({allAvailableColors.length})
+                  <span className="ral-group-dot" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                  <span>{language === 'uk' ? 'Всі' : language === 'ru' ? 'Все' : 'All'} ({allAvailableColors.length})</span>
                 </button>
                 {RAL_GROUPS.map(grp => (
                   <button 
                     key={grp.key}
                     className={`ral-group-tab-btn ${selectedRalGroup === grp.key ? 'active' : ''}`}
                     onClick={() => setSelectedRalGroup(grp.key)}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '6px 10px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--border-light)',
-                      background: selectedRalGroup === grp.key ? 'var(--red)' : 'var(--bg-dark)',
-                      color: selectedRalGroup === grp.key ? '#fff' : 'var(--text-secondary)',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      cursor: 'pointer'
-                    }}
                   >
-                    <span>{grp.icon}</span>
+                    <span className="ral-group-dot" style={{ backgroundColor: grp.colorSample }} />
                     <span>{language === 'uk' ? grp.nameUk : language === 'ru' ? grp.nameRu : grp.nameEn}</span>
                   </button>
                 ))}
               </div>
 
               {/* Step 2.2: Search Bar */}
-              <div style={{ marginBottom: '14px' }}>
+              <div className="ral-search-wrapper">
+                <svg className="ral-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
                 <input 
                   type="text" 
+                  className="ral-search-input"
                   placeholder={
                     language === 'uk' ? "Швидкий пошук за кодом RAL (напр. 7016, 9005, 3020)..." : 
                     language === 'ru' ? "Быстрый поиск по коду RAL (напр. 7016, 9005, 3020)..." : 
@@ -497,21 +480,11 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                   }
                   value={colorSearchQuery}
                   onChange={(e) => setColorSearchQuery(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '8px 14px',
-                    fontSize: '12px',
-                    borderRadius: '6px',
-                    border: '1px solid var(--border-light)',
-                    background: 'var(--bg-card)',
-                    color: 'var(--text-primary)',
-                    outline: 'none'
-                  }}
                 />
               </div>
 
               {/* Step 2.3: Shade Swatches Grid */}
-              <div className="color-circles-grid" style={{ maxHeight: '220px', overflowY: 'auto', paddingRight: '4px' }}>
+              <div className="color-circles-grid">
                 {allAvailableColors
                   .filter(c => {
                     // Group filter
@@ -533,7 +506,7 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                       <button 
                         key={`${c.id}-${c.ralCode || idx}`}
                         className={`color-circle-btn ${isSelected ? 'selected' : ''}`}
-                        style={{ backgroundColor: c.id, width: '32px', height: '32px', border: isSelected ? '3px solid var(--red)' : '1px solid var(--border-light)' }}
+                        style={{ backgroundColor: c.id }}
                         onClick={() => setSelectedColor(c)}
                         title={`${getLocalizedName(c)} ${c.ralCode ? `(${c.ralCode})` : ''}`}
                       />
