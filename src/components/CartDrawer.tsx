@@ -28,10 +28,17 @@ export default function CartDrawer() {
   const [loading, setLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
 
+  // Helper function to safely return translation or clean fallback
+  const getText = (key: string, uk: string, ru?: string, en?: string) => {
+    const val = t(key);
+    if (val !== key) return val;
+    return language === 'en' ? (en || uk) : language === 'ru' ? (ru || uk) : uk;
+  };
+
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !phone) {
-      alert(t('cart_error_empty_fields'));
+      alert(getText('cart_error_empty_fields', 'Будь ласка, заповніть ім\'я та телефон', 'Пожалуйста, заполните имя и телефон', 'Please fill name and phone'));
       return;
     }
 
@@ -71,11 +78,11 @@ export default function CartDrawer() {
         setPhone('');
         setComment('');
       } else {
-        alert(t('cart_error_submit'));
+        alert(getText('cart_error_submit', 'Помилка при створенні замовлення. Спробуйте ще раз.', 'Ошибка при создании заказа. Попробуйте еще раз.', 'Order creation error. Please try again.'));
       }
     } catch (err) {
       console.error(err);
-      alert(t('cart_error_network'));
+      alert(getText('cart_error_network', 'Помилка мережі. Перевірте з\'єднання.', 'Ошибка сети. Проверьте соединение.', 'Network error. Check connection.'));
     } finally {
       setLoading(false);
     }
@@ -86,17 +93,17 @@ export default function CartDrawer() {
   return (
     <>
       <div className="cart-overlay open" onClick={closeCart}></div>
-      <aside className="cart-drawer open" aria-label={t('cart_title')}>
+      <aside className="cart-drawer open" aria-label={getText('cart_title', 'Кошик', 'Корзина', 'Cart')}>
         <div className="cart-head">
-          <span>{t('cart_title')}</span>
+          <span>{getText('cart_title', 'Кошик', 'Корзина', 'Cart')}</span>
           <button onClick={closeCart} aria-label="Close drawer">&times;</button>
         </div>
 
         {orderSuccess ? (
           <div className="cart-success-view">
             <div className="success-icon">✓</div>
-            <h3>{t('cart_success_title')}</h3>
-            <p>{t('cart_success_desc')}</p>
+            <h3>{getText('cart_success_title', 'Дякуємо за замовлення!', 'Спасибо за заказ!', 'Thank you for your order!')}</h3>
+            <p>{getText('cart_success_desc', 'Наш менеджер зв\'яжеться з вами найближчим часом.', 'Наш менеджер свяжется с вами в ближайшее время.', 'Our manager will contact you shortly.')}</p>
             <button 
               className="btn-primary" 
               onClick={() => {
@@ -104,7 +111,7 @@ export default function CartDrawer() {
                 closeCart();
               }}
             >
-              {t('cart_btn_ok')}
+              {getText('cart_btn_ok', 'ОК', 'ОК', 'OK')}
             </button>
           </div>
         ) : (
@@ -113,9 +120,9 @@ export default function CartDrawer() {
               {cart.length === 0 ? (
                 <div className="cart-empty">
                   <span className="cart-empty-icon">🛒</span>
-                  <div className="cart-empty-title">{t('cart_empty')}</div>
+                  <div className="cart-empty-title">{getText('cart_empty', 'Кошик порожній', 'Корзина пуста', 'Cart is empty')}</div>
                   <p className="cart-empty-sub">
-                    {t('cart_empty_sub')}
+                    {getText('cart_empty_sub', 'Додайте товари з каталогу', 'Добавьте товары из каталога', 'Add products from catalog')}
                   </p>
                   <button
                     className="btn-outline"
@@ -127,7 +134,7 @@ export default function CartDrawer() {
                       }, 300);
                     }}
                   >
-                    {t('cart_btn_catalog')}
+                    {getText('cart_btn_catalog', 'Перейти до каталогу', 'Перейти в каталог', 'Go to catalog')}
                   </button>
                 </div>
               ) : (
@@ -158,7 +165,7 @@ export default function CartDrawer() {
             {cart.length > 0 && (
               <div className="cart-foot">
                 <div className="cart-total-row">
-                  <span className="ctl">{t('cart_total')}</span>
+                  <span className="ctl">{getText('cart_total', 'Всього:', 'Итого:', 'Total:')}</span>
                   <span className="ctv">{cartTotal} ₴</span>
                 </div>
 
@@ -166,7 +173,7 @@ export default function CartDrawer() {
                   <div className="form-field">
                     <input 
                       type="text" 
-                      placeholder={t('constructor_form_name')} 
+                      placeholder={getText('constructor_form_name', 'Ваше ім\'я', 'Ваше имя', 'Your name')} 
                       value={name} 
                       onChange={(e) => setName(e.target.value)} 
                       required 
@@ -175,7 +182,7 @@ export default function CartDrawer() {
                   <div className="form-field">
                     <input 
                       type="tel" 
-                      placeholder={t('constructor_form_phone')} 
+                      placeholder={getText('constructor_form_phone', 'Номер телефону', 'Номер телефона', 'Phone number')} 
                       value={phone} 
                       onChange={(e) => setPhone(e.target.value)} 
                       required 
@@ -183,57 +190,78 @@ export default function CartDrawer() {
                   </div>
                   <div className="form-field">
                     <textarea 
-                      placeholder={t('contact_form_comment')} 
+                      placeholder={getText('contact_form_comment', 'Коментар або побажання (необов\'язково)', 'Комментарий или пожелания (необязательно)', 'Comment (optional)')} 
                       value={comment} 
                       onChange={(e) => setComment(e.target.value)}
                       rows={2}
                     />
                   </div>
 
-                  <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>{t('cart_delivery_title')}</div>
+                  <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>
+                    {getText('cart_delivery_title', 'Доставка', 'Доставка', 'Delivery')}
+                  </div>
                   <div className="form-field" style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
                     <label className={`checkout-radio-label ${deliveryMethod === 'novaposhta' ? 'selected' : ''}`} style={{ flex: 1 }}>
                       <input type="radio" value="novaposhta" checked={deliveryMethod === 'novaposhta'} onChange={() => setDeliveryMethod('novaposhta')} />
-                      <FaTruck /> {t('cart_delivery_np')}
+                      <FaTruck /> {getText('cart_delivery_np', 'Нова Пошта', 'Новая Почта', 'Nova Poshta')}
                     </label>
                     <label className={`checkout-radio-label ${deliveryMethod === 'pickup' ? 'selected' : ''}`} style={{ flex: 1 }}>
                       <input type="radio" value="pickup" checked={deliveryMethod === 'pickup'} onChange={() => setDeliveryMethod('pickup')} />
-                      <FaStore /> {t('cart_delivery_pickup')}
+                      <FaStore /> {getText('cart_delivery_pickup', 'Самовивіз', 'Самовывоз', 'Pickup')}
                     </label>
                   </div>
                   
                   {deliveryMethod === 'novaposhta' && (
                     <>
                       <div className="form-field">
-                        <input type="text" placeholder={t('cart_delivery_city')} value={deliveryCity} onChange={(e) => setDeliveryCity(e.target.value)} required={deliveryMethod === 'novaposhta'} />
+                        <input 
+                          type="text" 
+                          placeholder={getText('cart_delivery_city', 'Місто (напр. Київ)', 'Город (напр. Киев)', 'City (e.g. Kyiv)')} 
+                          value={deliveryCity} 
+                          onChange={(e) => setDeliveryCity(e.target.value)} 
+                          required={deliveryMethod === 'novaposhta'} 
+                        />
                       </div>
                       <div className="form-field">
-                        <input type="text" placeholder={t('cart_delivery_warehouse')} value={deliveryWarehouse} onChange={(e) => setDeliveryWarehouse(e.target.value)} required={deliveryMethod === 'novaposhta'} />
+                        <input 
+                          type="text" 
+                          placeholder={getText('cart_delivery_warehouse', 'Відділення №', 'Отделение №', 'Warehouse #')} 
+                          value={deliveryWarehouse} 
+                          onChange={(e) => setDeliveryWarehouse(e.target.value)} 
+                          required={deliveryMethod === 'novaposhta'} 
+                        />
                       </div>
                     </>
                   )}
 
-                  <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>{t('cart_payment_title')}</div>
+                  <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>
+                    {getText('cart_payment_title', 'Оплата', 'Оплата', 'Payment')}
+                  </div>
                   <div className="form-field" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
                     <label className={`checkout-radio-label ${paymentMethod === 'cash' ? 'selected' : ''}`}>
                       <input type="radio" value="cash" checked={paymentMethod === 'cash'} onChange={() => setPaymentMethod('cash')} />
-                      <FaMoneyBillWave /> {t('cart_payment_cash')}
+                      <FaMoneyBillWave /> {getText('cart_payment_cash', 'При отриманні (Накладений платіж)', 'При получении (Наложенный платеж)', 'Cash on delivery')}
                     </label>
                     <label className={`checkout-radio-label ${paymentMethod === 'monobank' ? 'selected' : ''}`}>
                       <input type="radio" value="monobank" checked={paymentMethod === 'monobank'} onChange={() => setPaymentMethod('monobank')} />
-                      <FaCreditCard /> {t('cart_payment_mono')}
+                      <FaCreditCard /> {getText('cart_payment_mono', 'Оплата картою (Monobank)', 'Оплата картой (Monobank)', 'Card payment (Monobank)')}
                     </label>
                     <label className={`checkout-radio-label ${paymentMethod === 'liqpay' ? 'selected' : ''}`}>
                       <input type="radio" value="liqpay" checked={paymentMethod === 'liqpay'} onChange={() => setPaymentMethod('liqpay')} />
-                      <FaCreditCard /> {t('cart_payment_liqpay')}
+                      <FaCreditCard /> {getText('cart_payment_liqpay', 'Оплата картою (LiqPay / ПриватБанк)', 'Оплата картой (LiqPay / ПриватБанк)', 'Card payment (LiqPay)')}
                     </label>
                   </div>
                   <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
-                    {loading ? t('cart_btn_sending') : t('cart_checkout')}
+                    {loading 
+                      ? getText('cart_btn_sending', 'Надсилання...', 'Отправка...', 'Sending...') 
+                      : getText('cart_checkout', 'Оформити замовлення', 'Оформить заказ', 'Checkout')
+                    }
                   </button>
                 </form>
 
-                <button className="cart-clear" onClick={clearCart}>{t('cart_clear')}</button>
+                <button className="cart-clear" onClick={clearCart}>
+                  {getText('cart_clear', 'Очистити кошик', 'Очистить корзину', 'Clear cart')}
+                </button>
               </div>
             )}
           </>
