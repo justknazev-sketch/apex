@@ -485,6 +485,22 @@ section h2 {
   background-size: 60px 60px;
   pointer-events: none;
   z-index: 0;
+  opacity: 0.6;
+}
+
+.hero-bg-img {
+  position: absolute;
+  inset: 0;
+  background-image: url('/hero_bg.png');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+  mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 85%);
+  -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 85%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Animated red glow from bottom-center */
