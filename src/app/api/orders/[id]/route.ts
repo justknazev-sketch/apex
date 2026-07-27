@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAdminSession } from '@/lib/auth';
 
-// PUT update an order (admin only, e.g. status)
+// PUT update an order (admin only, e.g. status, paymentStatus, comment, delivery)
 export async function PUT(
   request: Request,
   context: { params: Promise<{ id: string }> }
@@ -21,9 +21,9 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { status } = body;
+    const { status, paymentStatus, comment, deliveryCity, deliveryWarehouse } = body;
 
-    if (status && !['new', 'in_progress', 'done'].includes(status)) {
+    if (status && !['new', 'in_progress', 'done', 'cancelled'].includes(status)) {
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
 
@@ -38,7 +38,11 @@ export async function PUT(
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
       data: {
-        status: status ?? existingOrder.status,
+        ...(status ? { status } : {}),
+        ...(paymentStatus ? { paymentStatus } : {}),
+        ...(comment !== undefined ? { comment } : {}),
+        ...(deliveryCity !== undefined ? { deliveryCity } : {}),
+        ...(deliveryWarehouse !== undefined ? { deliveryWarehouse } : {}),
       },
     });
 
@@ -67,19 +71,11 @@ export async function DELETE(
       return NextResponse.json({ error: 'Invalid order ID' }, { status: 400 });
     }
 
-    const existingOrder = await prisma.order.findUnique({
-      where: { id: orderId },
-    });
-
-    if (!existingOrder) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
-    }
-
     await prisma.order.delete({
       where: { id: orderId },
     });
 
-    return NextResponse.json({ success: true, message: 'Order deleted' });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Delete order error:', error);
     return NextResponse.json({ error: 'Failed to delete order' }, { status: 500 });

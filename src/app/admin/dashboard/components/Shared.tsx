@@ -26,6 +26,11 @@ export interface Order {
   comment?: string | null;
   detailsJson: string;
   status: string;
+  deliveryMethod?: string | null;
+  deliveryCity?: string | null;
+  deliveryWarehouse?: string | null;
+  paymentMethod?: string | null;
+  paymentStatus?: string | null;
   createdAt: string;
 }
 

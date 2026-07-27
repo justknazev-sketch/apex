@@ -2735,6 +2735,313 @@ section h2 {
   border: none;
 }
 
+/* =============================================
+   CRM DASHBOARD ENHANCEMENTS
+   ============================================= */
+
+/* Analytics Stats Grid */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: var(--transition-smooth);
+}
+
+.admin-stat-card:hover {
+  border-color: var(--text-muted);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.stat-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.stat-icon-wrap.green { background: rgba(46, 125, 50, 0.1); }
+.stat-icon-wrap.red { background: rgba(229, 57, 83, 0.1); }
+.stat-icon-wrap.yellow { background: rgba(245, 127, 23, 0.1); }
+.stat-icon-wrap.blue { background: rgba(25, 118, 210, 0.1); }
+
+.stat-pulse-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--red);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 2px solid var(--bg-card);
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-family: var(--font-outfit), sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* CRM Filter & Search Bar */
+.admin-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  background: var(--bg-card);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+}
+
+.admin-search-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 260px;
+  background: var(--bg-dark);
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+}
+
+.admin-search-input input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.admin-type-filters {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-type-filters button {
+  border: 1px solid var(--border-light);
+  background: var(--bg-dark);
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.admin-type-filters button:hover {
+  border-color: var(--red);
+  color: var(--text-primary);
+}
+
+.admin-type-filters button.active {
+  background: var(--red);
+  color: white;
+  border-color: var(--red);
+}
+
+/* 4-Column Kanban Board */
+.kanban-board-wrapper.CRM-4-col {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.kanban-column.cancelled .kanban-column-header {
+  color: #757575;
+  border-color: #757575;
+}
+
+.kanban-col-count {
+  float: right;
+  background: var(--bg-card);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.order-id-tag {
+  font-weight: 800;
+  color: var(--text-primary);
+  background: var(--bg-dark);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* CRM Quick Contact Action Buttons */
+.crm-card-contact-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.crm-icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+  color: white;
+}
+
+.crm-icon-btn.crm-call { background: #2E7D32; }
+.crm-icon-btn.crm-viber { background: #7360F2; }
+.crm-icon-btn.crm-tg { background: #0088CC; }
+
+.crm-icon-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.order-card-price {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--red);
+  margin-bottom: 8px;
+}
+
+.order-card-meta-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.meta-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.meta-tag.np { background: rgba(229, 57, 83, 0.1); color: var(--red); }
+.meta-tag.pickup { background: rgba(46, 125, 50, 0.1); color: #2E7D32; }
+.meta-tag.card { background: rgba(25, 118, 210, 0.1); color: #1976D2; }
+.meta-tag.cash { background: rgba(245, 127, 23, 0.1); color: #F57F17; }
+
+/* Status Action Buttons inside cards */
+.order-card-footer-actions {
+  display: flex;
+  gap: 6px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 10px;
+}
+
+.crm-btn-status {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-dark);
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.crm-btn-status.in-progress:hover { background: #F57F17; color: white; border-color: #F57F17; }
+.crm-btn-status.done:hover { background: #2E7D32; color: white; border-color: #2E7D32; }
+.crm-btn-status.cancel:hover { background: #757575; color: white; border-color: #757575; }
+
+/* CRM Detailed Order Modal */
+.crm-order-detail-modal {
+  max-width: 900px !important;
+  width: 90vw !important;
+}
+
+.crm-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.crm-detail-block {
+  background: var(--bg-dark);
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-light);
+}
+
+.crm-detail-block h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.crm-detail-field {
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
+.crm-detail-block textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--bg-card);
+}
+
+@media (max-width: 1024px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .kanban-board-wrapper.CRM-4-col {
+    grid-template-columns: 1fr;
+  }
+  .crm-modal-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 .blog-detail-photo {
   border-radius: 8px;
   overflow: hidden;
