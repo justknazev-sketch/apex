@@ -7,11 +7,10 @@ import OrdersTab from './components/OrdersTab';
 import ProductsTab from './components/ProductsTab';
 import ConstructorTab from './components/ConstructorTab';
 import BlogTab from './components/BlogTab';
-import SeoTab from './components/SeoTab';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'constructor' | 'blog' | 'seo'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'constructor' | 'blog'>('orders');
 
   const handleLogout = async () => {
     const res = await fetch('/api/auth/logout', { method: 'POST' });
@@ -37,7 +36,6 @@ export default function AdminDashboardPage() {
         <button className={`admin-tab-btn ${activeTab === 'products' ? 'active' : ''}`} onClick={() => setActiveTab('products')}>📦 Каталог</button>
         <button className={`admin-tab-btn ${activeTab === 'constructor' ? 'active' : ''}`} onClick={() => setActiveTab('constructor')}>🛠️ Конструктор</button>
         <button className={`admin-tab-btn ${activeTab === 'blog' ? 'active' : ''}`} onClick={() => setActiveTab('blog')}>📝 Блог</button>
-        <button className={`admin-tab-btn ${activeTab === 'seo' ? 'active' : ''}`} onClick={() => setActiveTab('seo')}>🔍 SEO & Метатеги</button>
       </div>
 
       <div className="admin-pane">
@@ -45,7 +43,6 @@ export default function AdminDashboardPage() {
         {activeTab === 'products' && <ProductsTab />}
         {activeTab === 'constructor' && <ConstructorTab />}
         {activeTab === 'blog' && <BlogTab />}
-        {activeTab === 'seo' && <SeoTab />}
       </div>
     </div>
   );
