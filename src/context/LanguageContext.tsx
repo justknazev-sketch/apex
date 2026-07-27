@@ -95,21 +95,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       {showModal && (
         <div className="lang-modal-overlay">
           <div className="lang-modal-card">
-            <h2>{t('lang_title') === 'lang_title' ? 'Оберіть мову / Выберите язык' : t('lang_title')}</h2>
-            <p>{t('lang_desc') === 'lang_desc' ? 'Будь ласка, оберіть зручну мову для роботи з сайтом Apex Force.' : t('lang_desc')}</p>
+            <h2>Оберіть мову / Choose language</h2>
+            <p>Будь ласка, оберіть зручну мову для роботи з сайтом Apex Force.</p>
             
             <div className="lang-buttons-grid">
               <button 
                 className={`lang-btn-opt ${language === 'uk' ? 'active' : ''}`}
                 onClick={() => setLanguage('uk')}
               >
-                🇺🇦 Українська (Default)
-              </button>
-              <button 
-                className={`lang-btn-opt ${language === 'ru' ? 'active' : ''}`}
-                onClick={() => setLanguage('ru')}
-              >
-                🇷🇺 Русский
+                🇺🇦 Українська
               </button>
               <button 
                 className={`lang-btn-opt ${language === 'en' ? 'active' : ''}`}
@@ -120,10 +114,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
             </div>
             
             <button 
+              className="lang-btn-opt lang-btn-subtle"
+              onClick={() => setLanguage('ru')}
+              style={{ opacity: language === 'ru' ? 1 : 0.5, border: language === 'ru' ? '2px solid var(--red)' : '1px solid var(--border-light)', fontSize: '14px', padding: '10px', marginTop: '-4px' }}
+            >
+              Русский
+            </button>
+            
+            <button 
               className="lang-confirm-btn"
               onClick={closeModal}
             >
-              {t('lang_btn') === 'lang_btn' ? 'Підтвердити / Подтвердить' : t('lang_btn')}
+              Підтвердити / Confirm
             </button>
           </div>
         </div>
