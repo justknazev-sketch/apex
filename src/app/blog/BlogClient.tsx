@@ -31,68 +31,89 @@ export default function BlogClient({ posts }: { posts: BlogPost[] }) {
     let text = post.contentUk;
     if (language === 'en') text = post.contentEn || text;
     if (language === 'ru') text = post.contentRu || text;
-    return text.substring(0, 150) + '...';
+    if (!text) return '';
+    return text.length > 120 ? text.substring(0, 120) + '...' : text;
+  };
+
+  const hasVideo = (post: BlogPost) => {
+    return !!(post.videoUrl && post.videoUrl.length > 0);
   };
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <div className="section-label">Apex Force Blog</div>
-      <h1 style={{ fontSize: '42px', marginBottom: '40px', color: 'var(--text-primary)' }}>Блог & Новини</h1>
-      
-      {posts.length === 0 ? (
-        <p style={{ color: 'var(--text-secondary)' }}>Поки що немає статей.</p>
-      ) : (
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-          gap: '30px' 
-        }}>
-          {posts.map(post => (
-            <Link 
-              key={post.id} 
-              href={`/blog/${post.slug}`}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border-light)',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                textDecoration: 'none',
-                color: 'inherit',
-                transition: 'var(--transition-smooth)'
-              }}
-              className="blog-card"
-            >
-              <div 
-                style={{
-                  width: '100%',
-                  paddingBottom: '60%',
-                  backgroundImage: post.photo ? `url(${post.photo})` : 'none',
-                  backgroundColor: 'var(--bg-dark)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  borderBottom: '1px solid var(--border-light)'
-                }}
-              />
-              <div style={{ padding: '24px' }}>
-                <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </div>
-                <h3 style={{ fontSize: '20px', marginBottom: '12px', color: 'var(--text-primary)', lineHeight: 1.3 }}>
-                  {getTitle(post)}
-                </h3>
-                <p style={{ fontSize: '15px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                  {getExcerpt(post)}
-                </p>
-                <div style={{ marginTop: '20px', color: 'var(--red)', fontWeight: 700, fontSize: '14px' }}>
-                  Читати далі →
-                </div>
-              </div>
-            </Link>
-          ))}
+    <>
+      {/* Blog Hero — в стиле hero главной страницы */}
+      <header className="blog-hero-wrapper">
+        <div className="blog-hero-content">
+          <div className="section-label">Apex Force</div>
+          <h1 className="blog-hero-title">
+            {language === 'en' ? <>Blog & <span className="logo-force">News</span></> : 
+             language === 'ru' ? <>Блог & <span className="logo-force">Новости</span></> : 
+             <>Блог & <span className="logo-force">Новини</span></>}
+          </h1>
+          <p className="blog-hero-desc">
+            {language === 'en' ? 'Special orders, crash tests, production cases and news from Apex Force' :
+             language === 'ru' ? 'Спецзаказы, краш-тесты, кейсы производства и новости Apex Force' :
+             'Спецзамовлення, краш-тести, кейси виробництва та новини Apex Force'}
+          </p>
         </div>
-      )}
-    </div>
+      </header>
+
+      {/* Blog Posts Grid */}
+      <section className="blog-section">
+        {posts.length === 0 ? (
+          <div className="blog-empty">
+            <div className="blog-empty-icon">📝</div>
+            <h2>
+              {language === 'en' ? 'No posts yet' : 
+               language === 'ru' ? 'Статей пока нет' : 
+               'Статей поки немає'}
+            </h2>
+            <p>
+              {language === 'en' ? 'Check back soon — we\'ll be posting soon!' :
+               language === 'ru' ? 'Скоро появятся первые публикации!' :
+               'Незабаром з\'являться перші публікації!'}
+            </p>
+          </div>
+        ) : (
+          <div className="blog-grid">
+            {posts.map(post => (
+              <Link 
+                key={post.id} 
+                href={`/blog/${post.slug}`}
+                className="blog-card"
+              >
+                <div className="blog-card-image">
+                  {post.photo ? (
+                    <div className="blog-card-photo" style={{ backgroundImage: `url(${post.photo})` }} />
+                  ) : (
+                    <div className="blog-card-photo blog-card-photo--empty">
+                      <span>{hasVideo(post) ? '▶' : '📝'}</span>
+                    </div>
+                  )}
+                  {hasVideo(post) && (
+                    <div className="blog-card-video-badge">
+                      <span>▶ Відео</span>
+                    </div>
+                  )}
+                </div>
+                <div className="blog-card-body">
+                  <div className="blog-card-date">
+                    {new Date(post.createdAt).toLocaleDateString(
+                      language === 'en' ? 'en-US' : language === 'ru' ? 'ru-RU' : 'uk-UA',
+                      { day: 'numeric', month: 'long', year: 'numeric' }
+                    )}
+                  </div>
+                  <h3 className="blog-card-title">{getTitle(post)}</h3>
+                  <p className="blog-card-excerpt">{getExcerpt(post)}</p>
+                  <div className="blog-card-cta">
+                    {language === 'en' ? 'Read more' : language === 'ru' ? 'Читать далее' : 'Читати далі'} →
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+    </>
   );
 }

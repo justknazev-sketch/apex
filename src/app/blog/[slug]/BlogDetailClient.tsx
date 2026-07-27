@@ -19,12 +19,12 @@ type BlogPost = {
 };
 
 export default function BlogDetailClient({ post }: { post: BlogPost }) {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
 
   const title = language === 'en' ? post.titleEn || post.titleUk : language === 'ru' ? post.titleRu || post.titleUk : post.titleUk;
   const content = language === 'en' ? post.contentEn || post.contentUk : language === 'ru' ? post.contentRu || post.contentUk : post.contentUk;
 
-  // Function to extract YouTube video ID from URL
+  // Extract YouTube video ID
   const getYouTubeId = (url: string) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
@@ -34,38 +34,57 @@ export default function BlogDetailClient({ post }: { post: BlogPost }) {
   const videoId = post.videoUrl ? getYouTubeId(post.videoUrl) : null;
 
   return (
-    <div className="main-content" style={{ padding: '120px 24px 60px', maxWidth: '800px', margin: '0 auto' }}>
-      <Link href="/blog" style={{ display: 'inline-block', marginBottom: '24px', color: 'var(--red)', textDecoration: 'none', fontWeight: 600 }}>
-        ← {t('back') === 'back' ? 'Назад до блогу' : t('back')}
-      </Link>
+    <div className="blog-detail-page">
+      <div className="blog-detail-container">
+        {/* Breadcrumb */}
+        <nav className="blog-detail-breadcrumb">
+          <Link href="/blog" className="blog-breadcrumb-link">
+            ← {language === 'en' ? 'Back to Blog' : language === 'ru' ? 'Назад к блогу' : 'Назад до блогу'}
+          </Link>
+        </nav>
 
-      <h1 style={{ fontSize: '42px', marginBottom: '16px', color: 'var(--text-primary)', lineHeight: 1.2 }}>{title}</h1>
-      
-      <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '32px' }}>
-        {new Date(post.createdAt).toLocaleDateString()}
-      </div>
+        {/* Header */}
+        <header className="blog-detail-header">
+          <div className="section-label">
+            {language === 'en' ? 'Apex Force Blog' : language === 'ru' ? 'Блог Apex Force' : 'Блог Apex Force'}
+          </div>
+          <h1 className="blog-detail-title">{title}</h1>
+          <div className="blog-detail-meta">
+            {new Date(post.createdAt).toLocaleDateString(
+              language === 'en' ? 'en-US' : language === 'ru' ? 'ru-RU' : 'uk-UA',
+              { day: 'numeric', month: 'long', year: 'numeric' }
+            )}
+          </div>
+        </header>
 
-      {post.photo && !videoId && (
-        <div style={{ width: '100%', marginBottom: '40px', borderRadius: '12px', overflow: 'hidden' }}>
-          <img src={post.photo} alt={title} style={{ width: '100%', display: 'block', height: 'auto' }} />
+        {/* Media: video takes priority over photo */}
+        {videoId ? (
+          <div className="blog-detail-video">
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}`}
+              title={title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        ) : post.photo ? (
+          <div className="blog-detail-photo">
+            <img src={post.photo} alt={title} />
+          </div>
+        ) : null}
+
+        {/* Content */}
+        <div className="blog-detail-content">
+          {content}
         </div>
-      )}
 
-      {videoId && (
-        <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', maxWidth: '100%', marginBottom: '40px', borderRadius: '12px' }}>
-          <iframe 
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-            src={`https://www.youtube.com/embed/${videoId}`}
-            title="YouTube video player" 
-            frameBorder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowFullScreen
-          ></iframe>
+        {/* Back link */}
+        <div className="blog-detail-footer">
+          <Link href="/blog" className="btn-outline">
+            ← {language === 'en' ? 'All posts' : language === 'ru' ? 'Все статьи' : 'Всі статті'}
+          </Link>
         </div>
-      )}
-
-      <div style={{ fontSize: '18px', lineHeight: 1.8, color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>
-        {content}
       </div>
     </div>
   );
