@@ -509,7 +509,9 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                         style={{ backgroundColor: c.id }}
                         onClick={() => setSelectedColor(c)}
                         title={`${getLocalizedName(c)} ${c.ralCode ? `(${c.ralCode})` : ''}`}
-                      />
+                      >
+                        {isSelected && <span className="swatch-check-mark">✓</span>}
+                      </button>
                     );
                   })}
               </div>
