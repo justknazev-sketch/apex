@@ -168,26 +168,26 @@ export default function CartDrawer() {
   return (
     <div className={`cart-overlay ${isCartOpen ? 'open' : ''}`} onClick={closeCart}>
       <div className={`cart-drawer ${isCartOpen ? 'open' : ''}`} onClick={(e) => e.stopPropagation()}>
-        <div className="cart-header">
+        <div className="cart-head cart-header">
           <h2>{getText('cart_title', 'Кошик', 'Корзина', 'Cart')} ({cart.reduce((sum, i) => sum + i.quantity, 0)})</h2>
-          <button className="cart-close-btn" onClick={closeCart}>×</button>
+          <button type="button" className="cart-close-btn" onClick={closeCart}>×</button>
         </div>
 
         {orderSuccess ? (
-          <div className="cart-body" style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <div className="cart-body cart-success-view">
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎉</div>
             <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>{getText('cart_success_title', 'Замовлення прийнято!', 'Заказ принят!', 'Order placed!')}</h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
               {getText('cart_success_desc', 'Ми зателефонуємо вам найближчим часом для підтвердження.', 'Мы перезвоним вам в ближайшее время для подтверждения.', 'We will call you shortly to confirm.')}
             </p>
-            <button className="btn-primary" onClick={() => { setOrderSuccess(false); closeCart(); }}>
+            <button type="button" className="btn-primary" onClick={() => { setOrderSuccess(false); closeCart(); }}>
               {getText('cart_btn_continue', 'Продовжити покупки', 'Продолжить покупки', 'Continue shopping')}
             </button>
           </div>
         ) : cart.length === 0 ? (
-          <div className="cart-body" style={{ textAlign: 'center', padding: '40px 20px' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.3 }}>🛒</div>
-            <p style={{ color: 'var(--text-secondary)' }}>{getText('cart_empty', 'Ваш кошик порожній', 'Ваша корзина пуста', 'Your cart is empty')}</p>
+          <div className="cart-body cart-empty">
+            <div className="cart-empty-icon">🛒</div>
+            <p className="cart-empty-title">{getText('cart_empty', 'Ваш кошик порожній', 'Ваша корзина пуста', 'Your cart is empty')}</p>
           </div>
         ) : (
           <>
@@ -195,23 +195,23 @@ export default function CartDrawer() {
               <div className="cart-items">
                 {cart.map((item) => (
                   <div key={item.id} className="cart-item">
-                    <div className="cart-item-photo">
+                    <div className="cart-thumb cart-item-photo">
                       {item.photo ? (
                         <Image src={item.photo} alt={item.name} fill style={{ objectFit: 'contain' }} />
                       ) : (
-                        <span>🏋️</span>
+                        <span style={{ fontSize: '24px', opacity: 0.3 }}>🏋️</span>
                       )}
                     </div>
                     <div className="cart-item-info">
                       <div className="cart-item-name">{item.name}</div>
                       <div className="cart-item-price">{item.price.toLocaleString()} грн</div>
-                      <div className="cart-item-controls">
-                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+                      <div className="cart-qty cart-item-controls">
+                        <button type="button" onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
                         <span>{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                        <button type="button" onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
                       </div>
                     </div>
-                    <button className="cart-item-remove" onClick={() => removeFromCart(item.id)}>×</button>
+                    <button type="button" className="cart-remove cart-item-remove" onClick={() => removeFromCart(item.id)}>×</button>
                   </div>
                 ))}
               </div>
