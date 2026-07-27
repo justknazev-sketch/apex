@@ -213,7 +213,7 @@ export const RAL_CLASSIC_COLLECTION: RalColor[] = [
 
   // 9000 - Чорні та Білі
   { hex: '#FDF4E3', ralCode: 'RAL 9001', group: 'black_white', nameUk: 'Кремовий', nameRu: 'Кремовый', nameEn: 'Cream' },
-  { hex: '#E7EB3A', ralCode: 'RAL 9002', group: 'black_white', nameUk: 'Сіро-білий', nameRu: 'Серо-белый', nameEn: 'Grey white' },
+  { hex: '#D7D5CB', ralCode: 'RAL 9002', group: 'black_white', nameUk: 'Сіро-білий', nameRu: 'Серо-белый', nameEn: 'Grey white' },
   { hex: '#F4F4F4', ralCode: 'RAL 9003', group: 'black_white', nameUk: 'Сигнальний білий', nameRu: 'Сигнальный белый', nameEn: 'Signal white' },
   { hex: '#282828', ralCode: 'RAL 9004', group: 'black_white', nameUk: 'Сигнальний чорний', nameRu: 'Сигнальный черный', nameEn: 'Signal black' },
   { hex: '#0A0A0A', ralCode: 'RAL 9005', group: 'black_white', nameUk: 'Глибоко-чорний', nameRu: 'Глубокий черный', nameEn: 'Jet black' },
