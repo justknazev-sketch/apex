@@ -28,11 +28,88 @@ export default function CartDrawer() {
   const [loading, setLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
 
+  // Nova Poshta API autocomplete states
+  const [npCities, setNpCities] = useState<{ present: string; deliveryCityRef: string; mainDescription?: string }[]>([]);
+  const [npWarehouses, setNpWarehouses] = useState<{ description: string; number: string }[]>([]);
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
+  const [showWarehouseDropdown, setShowWarehouseDropdown] = useState(false);
+
   // Helper function to safely return translation or clean fallback
   const getText = (key: string, uk: string, ru?: string, en?: string) => {
     const val = t(key);
     if (val !== key) return val;
     return language === 'en' ? (en || uk) : language === 'ru' ? (ru || uk) : uk;
+  };
+
+  // Handle City Autocomplete
+  const handleCityChange = async (val: string) => {
+    setDeliveryCity(val);
+    setDeliveryWarehouse('');
+    setNpWarehouses([]);
+
+    if (val.trim().length >= 2) {
+      try {
+        const res = await fetch(`/api/novaposhta?action=cities&q=${encodeURIComponent(val.trim())}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.cities && data.cities.length > 0) {
+            setNpCities(data.cities);
+            setShowCityDropdown(true);
+            return;
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    setNpCities([]);
+    setShowCityDropdown(false);
+  };
+
+  const selectCity = async (city: { present: string; deliveryCityRef: string; mainDescription?: string }) => {
+    const displayName = city.present || city.mainDescription || '';
+    setDeliveryCity(displayName);
+    setShowCityDropdown(false);
+
+    // Fetch warehouses for selected city
+    try {
+      const url = city.deliveryCityRef 
+        ? `/api/novaposhta?action=warehouses&cityRef=${city.deliveryCityRef}`
+        : `/api/novaposhta?action=warehouses&cityName=${encodeURIComponent(city.mainDescription || displayName)}`;
+        
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.warehouses && data.warehouses.length > 0) {
+          setNpWarehouses(data.warehouses);
+          setShowWarehouseDropdown(true);
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  const handleWarehouseChange = async (val: string) => {
+    setDeliveryWarehouse(val);
+
+    if (npWarehouses.length === 0 && deliveryCity.trim().length >= 2) {
+      try {
+        const res = await fetch(`/api/novaposhta?action=warehouses&cityName=${encodeURIComponent(deliveryCity.trim())}&q=${encodeURIComponent(val)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.warehouses && data.warehouses.length > 0) {
+            setNpWarehouses(data.warehouses);
+            setShowWarehouseDropdown(true);
+            return;
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    } else if (npWarehouses.length > 0) {
+      setShowWarehouseDropdown(true);
+    }
   };
 
   const handleCheckout = async (e: React.FormEvent) => {
@@ -51,7 +128,8 @@ export default function CartDrawer() {
         price: item.price,
         quantity: item.quantity
       })),
-      total: cartTotal
+      totalPrice: cartTotal,
+      language
     };
 
     try {
@@ -62,27 +140,24 @@ export default function CartDrawer() {
           type: 'order',
           name,
           phone,
-          comment,
-          detailsJson: JSON.stringify(orderDetails),
+          comment: comment || null,
           deliveryMethod,
           deliveryCity: deliveryMethod === 'novaposhta' ? deliveryCity : null,
           deliveryWarehouse: deliveryMethod === 'novaposhta' ? deliveryWarehouse : null,
-          paymentMethod
+          paymentMethod,
+          detailsJson: JSON.stringify(orderDetails)
         })
       });
 
       if (res.ok) {
         setOrderSuccess(true);
         clearCart();
-        setName('');
-        setPhone('');
-        setComment('');
       } else {
-        alert(getText('cart_error_submit', 'Помилка при створенні замовлення. Спробуйте ще раз.', 'Ошибка при создании заказа. Попробуйте еще раз.', 'Order creation error. Please try again.'));
+        alert(getText('cart_order_error', 'Помилка при створенні замовлення. Спробуйте ще раз.', 'Ошибка при создании заказа. Попробуйте еще раз.', 'Error placing order. Please try again.'));
       }
     } catch (err) {
       console.error(err);
-      alert(getText('cart_error_network', 'Помилка мережі. Перевірте з\'єднання.', 'Ошибка сети. Проверьте соединение.', 'Network error. Check connection.'));
+      alert(getText('cart_conn_error', 'Помилка з\'єднання.', 'Ошибка соединения.', 'Connection error.'));
     } finally {
       setLoading(false);
     }
@@ -91,182 +166,193 @@ export default function CartDrawer() {
   if (!isCartOpen) return null;
 
   return (
-    <>
-      <div className="cart-overlay open" onClick={closeCart}></div>
-      <aside className="cart-drawer open" aria-label={getText('cart_title', 'Кошик', 'Корзина', 'Cart')}>
-        <div className="cart-head">
-          <span>{getText('cart_title', 'Кошик', 'Корзина', 'Cart')}</span>
-          <button onClick={closeCart} aria-label="Close drawer">&times;</button>
+    <div className="cart-overlay" onClick={closeCart}>
+      <div className="cart-drawer" onClick={(e) => e.stopPropagation()}>
+        <div className="cart-header">
+          <h2>{getText('cart_title', 'Кошик', 'Корзина', 'Cart')} ({cart.reduce((sum, i) => sum + i.quantity, 0)})</h2>
+          <button className="cart-close-btn" onClick={closeCart}>×</button>
         </div>
 
         {orderSuccess ? (
-          <div className="cart-success-view">
-            <div className="success-icon">✓</div>
-            <h3>{getText('cart_success_title', 'Дякуємо за замовлення!', 'Спасибо за заказ!', 'Thank you for your order!')}</h3>
-            <p>{getText('cart_success_desc', 'Наш менеджер зв\'яжеться з вами найближчим часом.', 'Наш менеджер свяжется с вами в ближайшее время.', 'Our manager will contact you shortly.')}</p>
-            <button 
-              className="btn-primary" 
-              onClick={() => {
-                setOrderSuccess(false);
-                closeCart();
-              }}
-            >
-              {getText('cart_btn_ok', 'ОК', 'ОК', 'OK')}
+          <div className="cart-body" style={{ textAlign: 'center', padding: '40px 20px' }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎉</div>
+            <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>{getText('cart_success_title', 'Замовлення прийнято!', 'Заказ принят!', 'Order placed!')}</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
+              {getText('cart_success_desc', 'Ми зателефонуємо вам найближчим часом для підтвердження.', 'Мы перезвоним вам в ближайшее время для подтверждения.', 'We will call you shortly to confirm.')}
+            </p>
+            <button className="btn-primary" onClick={() => { setOrderSuccess(false); closeCart(); }}>
+              {getText('cart_btn_continue', 'Продовжити покупки', 'Продолжить покупки', 'Continue shopping')}
             </button>
+          </div>
+        ) : cart.length === 0 ? (
+          <div className="cart-body" style={{ textAlign: 'center', padding: '40px 20px' }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.3 }}>🛒</div>
+            <p style={{ color: 'var(--text-secondary)' }}>{getText('cart_empty', 'Ваш кошик порожній', 'Ваша корзина пуста', 'Your cart is empty')}</p>
           </div>
         ) : (
           <>
-            <div className="cart-items">
-              {cart.length === 0 ? (
-                <div className="cart-empty">
-                  <span className="cart-empty-icon">🛒</span>
-                  <div className="cart-empty-title">{getText('cart_empty', 'Кошик порожній', 'Корзина пуста', 'Cart is empty')}</div>
-                  <p className="cart-empty-sub">
-                    {getText('cart_empty_sub', 'Додайте товари з каталогу', 'Добавьте товары из каталога', 'Add products from catalog')}
-                  </p>
-                  <button
-                    className="btn-outline"
-                    style={{ padding: '10px 24px', fontSize: '13px', marginTop: '4px' }}
-                    onClick={() => {
-                      closeCart();
-                      setTimeout(() => {
-                        document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
-                      }, 300);
-                    }}
-                  >
-                    {getText('cart_btn_catalog', 'Перейти до каталогу', 'Перейти в каталог', 'Go to catalog')}
-                  </button>
-                </div>
-              ) : (
-                cart.map((item) => (
-                  <div className="cart-item" key={item.id}>
-                    {item.photo ? (
-                      <div className="cart-thumb" style={{ position: 'relative', overflow: 'hidden' }}>
-                        <Image src={item.photo} alt={item.name} fill sizes="64px" style={{ objectFit: 'cover' }} />
-                      </div>
-                    ) : (
-                      <div className="cart-thumb-placeholder">🏋️</div>
-                    )}
+            <div className="cart-body">
+              <div className="cart-items">
+                {cart.map((item) => (
+                  <div key={item.id} className="cart-item">
+                    <div className="cart-item-photo">
+                      {item.photo ? (
+                        <Image src={item.photo} alt={item.name} fill style={{ objectFit: 'contain' }} />
+                      ) : (
+                        <span>🏋️</span>
+                      )}
+                    </div>
                     <div className="cart-item-info">
                       <div className="cart-item-name">{item.name}</div>
-                      <div className="cart-item-price">{item.price} ₴</div>
-                      <div className="cart-qty">
+                      <div className="cart-item-price">{item.price.toLocaleString()} грн</div>
+                      <div className="cart-item-controls">
                         <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
                         <span>{item.quantity}</span>
                         <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
                       </div>
                     </div>
-                    <button className="cart-remove" onClick={() => removeFromCart(item.id)} title="Remove item">&times;</button>
+                    <button className="cart-item-remove" onClick={() => removeFromCart(item.id)}>×</button>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
 
-            {cart.length > 0 && (
-              <div className="cart-foot">
-                <div className="cart-total-row">
-                  <span className="ctl">{getText('cart_total', 'Всього:', 'Итого:', 'Total:')}</span>
-                  <span className="ctv">{cartTotal} ₴</span>
+              <form id="checkout-form" onSubmit={handleCheckout} className="checkout-form">
+                <div className="checkout-section-title">{getText('cart_checkout_title', 'Оформлення замовлення', 'Оформление заказа', 'Checkout')}</div>
+                
+                <div className="form-field">
+                  <input 
+                    type="text" 
+                    placeholder={getText('cart_name_placeholder', 'Ваше ім\'я *', 'Ваше имя *', 'Your name *')} 
+                    value={name} 
+                    onChange={(e) => setName(e.target.value)} 
+                    required 
+                  />
+                </div>
+                
+                <div className="form-field">
+                  <input 
+                    type="tel" 
+                    placeholder={getText('cart_phone_placeholder', 'Телефон *', 'Телефон *', 'Phone *')} 
+                    value={phone} 
+                    onChange={(e) => setPhone(e.target.value)} 
+                    required 
+                  />
                 </div>
 
-                <form className="cart-checkout-form" onSubmit={handleCheckout}>
-                  <div className="form-field">
-                    <input 
-                      type="text" 
-                      placeholder={getText('constructor_form_name', 'Ваше ім\'я', 'Ваше имя', 'Your name')} 
-                      value={name} 
-                      onChange={(e) => setName(e.target.value)} 
-                      required 
-                    />
-                  </div>
-                  <div className="form-field">
-                    <input 
-                      type="tel" 
-                      placeholder={getText('constructor_form_phone', 'Номер телефону', 'Номер телефона', 'Phone number')} 
-                      value={phone} 
-                      onChange={(e) => setPhone(e.target.value)} 
-                      required 
-                    />
-                  </div>
-                  <div className="form-field">
-                    <textarea 
-                      placeholder={getText('contact_form_comment', 'Коментар або побажання (необов\'язково)', 'Комментарий или пожелания (необязательно)', 'Comment (optional)')} 
-                      value={comment} 
-                      onChange={(e) => setComment(e.target.value)}
-                      rows={2}
-                    />
-                  </div>
+                <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>
+                  {getText('cart_delivery_title', 'Доставка', 'Доставка', 'Delivery')}
+                </div>
+                <div className="form-field" style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+                  <label className={`checkout-radio-label ${deliveryMethod === 'novaposhta' ? 'selected' : ''}`} style={{ flex: 1 }}>
+                    <input type="radio" value="novaposhta" checked={deliveryMethod === 'novaposhta'} onChange={() => setDeliveryMethod('novaposhta')} />
+                    <FaTruck /> {getText('cart_delivery_np', 'Нова Пошта', 'Новая Почта', 'Nova Poshta')}
+                  </label>
+                  <label className={`checkout-radio-label ${deliveryMethod === 'pickup' ? 'selected' : ''}`} style={{ flex: 1 }}>
+                    <input type="radio" value="pickup" checked={deliveryMethod === 'pickup'} onChange={() => setDeliveryMethod('pickup')} />
+                    <FaStore /> {getText('cart_delivery_pickup', 'Самовивіз', 'Самовывоз', 'Pickup')}
+                  </label>
+                </div>
+                
+                {deliveryMethod === 'novaposhta' && (
+                  <>
+                    <div className="form-field np-autocomplete-container">
+                      <input 
+                        type="text" 
+                        placeholder={getText('cart_delivery_city', 'Місто (напр. Київ)', 'Город (напр. Киев)', 'City (e.g. Kyiv)')} 
+                        value={deliveryCity} 
+                        onChange={(e) => handleCityChange(e.target.value)} 
+                        onFocus={() => npCities.length > 0 && setShowCityDropdown(true)}
+                        required={deliveryMethod === 'novaposhta'} 
+                      />
+                      {showCityDropdown && npCities.length > 0 && (
+                        <ul className="np-autocomplete-dropdown">
+                          {npCities.map((c, idx) => (
+                            <li key={idx} className="np-dropdown-item" onClick={() => selectCity(c)}>
+                              {c.present}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                    
+                    <div className="form-field np-autocomplete-container">
+                      <input 
+                        type="text" 
+                        placeholder={getText('cart_delivery_warehouse', 'Відділення № або адреса', 'Отделение № или адрес', 'Warehouse # or address')} 
+                        value={deliveryWarehouse} 
+                        onChange={(e) => handleWarehouseChange(e.target.value)} 
+                        onFocus={() => npWarehouses.length > 0 && setShowWarehouseDropdown(true)}
+                        required={deliveryMethod === 'novaposhta'} 
+                      />
+                      {showWarehouseDropdown && npWarehouses.length > 0 && (
+                        <ul className="np-autocomplete-dropdown">
+                          {npWarehouses
+                            .filter(w => !deliveryWarehouse || w.description.toLowerCase().includes(deliveryWarehouse.toLowerCase()) || w.number === deliveryWarehouse)
+                            .slice(0, 60)
+                            .map((w, idx) => (
+                              <li 
+                                key={idx} 
+                                className="np-dropdown-item" 
+                                onClick={() => {
+                                  setDeliveryWarehouse(w.description);
+                                  setShowWarehouseDropdown(false);
+                                }}
+                              >
+                                {w.description}
+                              </li>
+                            ))}
+                        </ul>
+                      )}
+                    </div>
+                  </>
+                )}
 
-                  <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>
-                    {getText('cart_delivery_title', 'Доставка', 'Доставка', 'Delivery')}
-                  </div>
-                  <div className="form-field" style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
-                    <label className={`checkout-radio-label ${deliveryMethod === 'novaposhta' ? 'selected' : ''}`} style={{ flex: 1 }}>
-                      <input type="radio" value="novaposhta" checked={deliveryMethod === 'novaposhta'} onChange={() => setDeliveryMethod('novaposhta')} />
-                      <FaTruck /> {getText('cart_delivery_np', 'Нова Пошта', 'Новая Почта', 'Nova Poshta')}
-                    </label>
-                    <label className={`checkout-radio-label ${deliveryMethod === 'pickup' ? 'selected' : ''}`} style={{ flex: 1 }}>
-                      <input type="radio" value="pickup" checked={deliveryMethod === 'pickup'} onChange={() => setDeliveryMethod('pickup')} />
-                      <FaStore /> {getText('cart_delivery_pickup', 'Самовивіз', 'Самовывоз', 'Pickup')}
-                    </label>
-                  </div>
-                  
-                  {deliveryMethod === 'novaposhta' && (
-                    <>
-                      <div className="form-field">
-                        <input 
-                          type="text" 
-                          placeholder={getText('cart_delivery_city', 'Місто (напр. Київ)', 'Город (напр. Киев)', 'City (e.g. Kyiv)')} 
-                          value={deliveryCity} 
-                          onChange={(e) => setDeliveryCity(e.target.value)} 
-                          required={deliveryMethod === 'novaposhta'} 
-                        />
-                      </div>
-                      <div className="form-field">
-                        <input 
-                          type="text" 
-                          placeholder={getText('cart_delivery_warehouse', 'Відділення №', 'Отделение №', 'Warehouse #')} 
-                          value={deliveryWarehouse} 
-                          onChange={(e) => setDeliveryWarehouse(e.target.value)} 
-                          required={deliveryMethod === 'novaposhta'} 
-                        />
-                      </div>
-                    </>
-                  )}
+                <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>
+                  {getText('cart_payment_title', 'Оплата', 'Оплата', 'Payment')}
+                </div>
+                <div className="form-field" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+                  <label className={`checkout-radio-label ${paymentMethod === 'cash' ? 'selected' : ''}`}>
+                    <input type="radio" value="cash" checked={paymentMethod === 'cash'} onChange={() => setPaymentMethod('cash')} />
+                    <FaMoneyBillWave /> {getText('cart_payment_cash', 'При отриманні (Накладений платіж)', 'При получении (Наложенный платеж)', 'Cash on delivery')}
+                  </label>
+                  <label className={`checkout-radio-label ${paymentMethod === 'monobank' ? 'selected' : ''}`}>
+                    <input type="radio" value="monobank" checked={paymentMethod === 'monobank'} onChange={() => setPaymentMethod('monobank')} />
+                    <FaCreditCard /> {getText('cart_payment_mono', 'Оплата картою (Monobank)', 'Оплата картой (Monobank)', 'Card payment (Monobank)')}
+                  </label>
+                  <label className={`checkout-radio-label ${paymentMethod === 'liqpay' ? 'selected' : ''}`}>
+                    <input type="radio" value="liqpay" checked={paymentMethod === 'liqpay'} onChange={() => setPaymentMethod('liqpay')} />
+                    <FaCreditCard /> {getText('cart_payment_liqpay', 'LiqPay / Приват24', 'LiqPay / Приват24', 'LiqPay / Privat24')}
+                  </label>
+                </div>
 
-                  <div className="checkout-section-title" style={{ marginTop: '16px', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>
-                    {getText('cart_payment_title', 'Оплата', 'Оплата', 'Payment')}
-                  </div>
-                  <div className="form-field" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-                    <label className={`checkout-radio-label ${paymentMethod === 'cash' ? 'selected' : ''}`}>
-                      <input type="radio" value="cash" checked={paymentMethod === 'cash'} onChange={() => setPaymentMethod('cash')} />
-                      <FaMoneyBillWave /> {getText('cart_payment_cash', 'При отриманні (Накладений платіж)', 'При получении (Наложенный платеж)', 'Cash on delivery')}
-                    </label>
-                    <label className={`checkout-radio-label ${paymentMethod === 'monobank' ? 'selected' : ''}`}>
-                      <input type="radio" value="monobank" checked={paymentMethod === 'monobank'} onChange={() => setPaymentMethod('monobank')} />
-                      <FaCreditCard /> {getText('cart_payment_mono', 'Оплата картою (Monobank)', 'Оплата картой (Monobank)', 'Card payment (Monobank)')}
-                    </label>
-                    <label className={`checkout-radio-label ${paymentMethod === 'liqpay' ? 'selected' : ''}`}>
-                      <input type="radio" value="liqpay" checked={paymentMethod === 'liqpay'} onChange={() => setPaymentMethod('liqpay')} />
-                      <FaCreditCard /> {getText('cart_payment_liqpay', 'Оплата картою (LiqPay / ПриватБанк)', 'Оплата картой (LiqPay / ПриватБанк)', 'Card payment (LiqPay)')}
-                    </label>
-                  </div>
-                  <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
-                    {loading 
-                      ? getText('cart_btn_sending', 'Надсилання...', 'Отправка...', 'Sending...') 
-                      : getText('cart_checkout', 'Оформити замовлення', 'Оформить заказ', 'Checkout')
-                    }
-                  </button>
-                </form>
+                <div className="form-field">
+                  <textarea 
+                    placeholder={getText('cart_comment_placeholder', 'Коментар до замовлення', 'Комментарий к заказу', 'Order comment')} 
+                    value={comment} 
+                    onChange={(e) => setComment(e.target.value)} 
+                    rows={2} 
+                  />
+                </div>
+              </form>
+            </div>
 
-                <button className="cart-clear" onClick={clearCart}>
-                  {getText('cart_clear', 'Очистити кошик', 'Очистить корзину', 'Clear cart')}
-                </button>
+            <div className="cart-footer">
+              <div className="cart-summary">
+                <span>{getText('cart_total', 'Всього:', 'Итого:', 'Total:')}</span>
+                <span className="cart-total-price">{cartTotal.toLocaleString()} грн</span>
               </div>
-            )}
+              <button 
+                type="submit" 
+                form="checkout-form" 
+                className="btn-primary cart-checkout-btn"
+                disabled={loading}
+              >
+                {loading ? getText('cart_processing', 'Обробка...', 'Обработка...', 'Processing...') : getText('cart_btn_order', 'Оформити замовлення', 'Оформить заказ', 'Place order')}
+              </button>
+            </div>
           </>
         )}
-      </aside>
-    </>
+      </div>
+    </div>
   );
 }

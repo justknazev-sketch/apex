@@ -1194,6 +1194,42 @@ section h2 {
   color: var(--red);
 }
 
+/* Nova Poshta Autocomplete Dropdown */
+.np-autocomplete-container {
+  position: relative;
+}
+
+.np-autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  list-style: none;
+  padding: 4px 0;
+  margin: 0;
+}
+
+.np-dropdown-item {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  line-height: 1.4;
+}
+
+.np-dropdown-item:hover {
+  background: rgba(229, 57, 83, 0.08);
+  color: var(--red);
+}
+
 /* Works / Portfolio grid */
 .works-grid {
   display: grid;
