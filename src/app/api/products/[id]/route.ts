@@ -21,7 +21,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { category, nameUk, nameRu, nameEn, price, badgeUk, badgeRu, badgeEn, specsJson, photo } = body;
+    const { category, nameUk, nameRu, nameEn, price, badgeUk, badgeRu, badgeEn, specsJson, photo, photosJson } = body;
 
     const existingProduct = await prisma.product.findUnique({
       where: { id: productId },
@@ -44,6 +44,7 @@ export async function PUT(
         badgeEn: badgeEn !== undefined ? badgeEn : existingProduct.badgeEn,
         specsJson: specsJson ?? existingProduct.specsJson,
         photo: photo ?? existingProduct.photo,
+        photosJson: photosJson !== undefined ? photosJson : existingProduct.photosJson,
       },
     });
 

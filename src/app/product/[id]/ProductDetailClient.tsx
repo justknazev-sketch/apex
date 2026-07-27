@@ -18,6 +18,7 @@ interface Product {
   badgeEn?: string | null;
   specsJson: string;
   photo?: string;
+  photosJson?: string | null;
 }
 
 export default function ProductDetailClient({ product }: { product: Product }) {
@@ -28,6 +29,21 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const [phone, setPhone] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Parse gallery photos
+  let galleryPhotos: string[] = [];
+  if (product.photosJson) {
+    try {
+      galleryPhotos = JSON.parse(product.photosJson);
+    } catch (e) {
+      galleryPhotos = [];
+    }
+  }
+  if (galleryPhotos.length === 0 && product.photo) {
+    galleryPhotos = [product.photo];
+  }
+
+  const [activePhoto, setActivePhoto] = useState<string>(galleryPhotos[0] || product.photo || '');
 
   const isAdded = cart.some(item => item.id === product.id);
 
@@ -101,14 +117,59 @@ export default function ProductDetailClient({ product }: { product: Product }) {
       </Link>
 
       <div className="product-detail-grid">
-        {/* Left: Photo */}
-        <div className="product-detail-image-box" style={{ background: 'var(--photo-wrap-bg)', border: '1px solid transparent', borderRadius: '8px', overflow: 'hidden', aspectRatio: '4/3', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-          {product.photo ? (
-            <Image src={product.photo} alt={getLocalizedName()} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'contain', mixBlendMode: 'multiply' }} />
-          ) : (
-            <span style={{ fontSize: '96px', opacity: 0.2 }}>🏋️</span>
+        {/* Left: Gallery (Main Photo + Thumbnails) */}
+        <div>
+          <div 
+            className="product-detail-image-box" 
+            style={{ 
+              background: 'var(--photo-wrap-bg)', 
+              border: '1px solid var(--border-light)', 
+              borderRadius: '8px', 
+              overflow: 'hidden', 
+              aspectRatio: '4/3', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              position: 'relative',
+              marginBottom: galleryPhotos.length > 1 ? '12px' : '0'
+            }}
+          >
+            {activePhoto ? (
+              <Image src={activePhoto} alt={getLocalizedName()} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'contain', mixBlendMode: 'multiply', transition: 'all 0.3s ease' }} />
+            ) : (
+              <span style={{ fontSize: '96px', opacity: 0.2 }}>🏋️</span>
+            )}
+            {badge && <span className="product-badge" style={{ top: '20px', left: '20px', fontSize: '12px' }}>{badge}</span>}
+          </div>
+
+          {/* Gallery Thumbnails List */}
+          {galleryPhotos.length > 1 && (
+            <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '4px' }}>
+              {galleryPhotos.map((url, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActivePhoto(url)}
+                  style={{
+                    width: '72px',
+                    height: '54px',
+                    position: 'relative',
+                    borderRadius: '6px',
+                    overflow: 'hidden',
+                    border: activePhoto === url ? '2px solid var(--red)' : '1px solid var(--border-light)',
+                    background: 'var(--photo-wrap-bg)',
+                    cursor: 'pointer',
+                    opacity: activePhoto === url ? 1 : 0.65,
+                    transition: 'all 0.2s ease',
+                    padding: 0,
+                    flexShrink: 0
+                  }}
+                  title={`Фото ${idx + 1}`}
+                >
+                  <Image src={url} alt={`Thumbnail ${idx + 1}`} fill sizes="72px" style={{ objectFit: 'cover' }} />
+                </button>
+              ))}
+            </div>
           )}
-          {badge && <span className="product-badge" style={{ top: '20px', left: '20px', fontSize: '12px' }}>{badge}</span>}
         </div>
 
         {/* Right: Info, Price, Cart & Fast Buy Form */}
@@ -151,7 +212,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
           <button 
             className={`btn-primary ${isAdded ? 'in-cart' : ''}`} 
             style={{ width: '100%', marginBottom: '24px' }}
-            onClick={() => addToCart({ id: product.id, name: getLocalizedName(), price: product.price, photo: product.photo })}
+            onClick={() => addToCart({ id: product.id, name: getLocalizedName(), price: product.price, photo: activePhoto || product.photo })}
           >
             {isAdded ? t('product_in_cart') : t('product_buy')}
           </button>

@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { category, nameUk, nameRu, nameEn, price, badgeUk, badgeRu, badgeEn, specsJson, photo } = body;
+    const { category, nameUk, nameRu, nameEn, price, badgeUk, badgeRu, badgeEn, specsJson, photo, photosJson } = body;
 
     if (!category || !nameUk || !price) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -49,6 +49,7 @@ export async function POST(request: Request) {
         badgeEn,
         specsJson: specsJson || '[]',
         photo: photo || '',
+        photosJson: photosJson || null,
       },
     });
 

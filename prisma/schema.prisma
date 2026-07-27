@@ -29,6 +29,7 @@ model Product {
   badgeEn   String?
   specsJson String   // JSON string of specs, e.g. '[["Цвет","Красный"],["Профиль","80x80 мм"]]'
   photo     String   // base64 image data or URL string
+  photosJson String?  // JSON string array of image URLs, e.g. '["url1", "url2"]'
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

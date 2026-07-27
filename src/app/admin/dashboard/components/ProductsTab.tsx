@@ -15,6 +15,7 @@ export default function ProductsTab() {
   const [isCatManagerOpen, setIsCatManagerOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [photosList, setPhotosList] = useState<string[]>([]);
   const [productForm, setProductForm] = useState({
     category: '', nameUk: '', nameRu: '', nameEn: '', 
     price: '', badgeUk: '', badgeRu: '', badgeEn: '', photo: ''
@@ -62,8 +63,15 @@ export default function ProductsTab() {
 
         if (res.ok) {
           const data = await res.json();
-          setProductForm(prev => ({ ...prev, photo: data.secure_url }));
-          showToast('Фото успішно завантажено');
+          const newUrl = data.secure_url;
+          setPhotosList(prev => {
+            const next = [...prev, newUrl];
+            if (!productForm.photo) {
+              setProductForm(p => ({ ...p, photo: newUrl }));
+            }
+            return next;
+          });
+          showToast('Фото додано до галереї');
         } else {
           showToast('Помилка завантаження фото в Cloudinary', 'error');
         }
@@ -71,8 +79,19 @@ export default function ProductsTab() {
         showToast('Помилка з\'єднання при завантаженні фото', 'error');
       } finally {
         setIsUploadingPhoto(false);
+        e.target.value = '';
       }
     }
+  };
+
+  const removePhotoFromList = (indexToRemove: number) => {
+    setPhotosList(prev => {
+      const next = prev.filter((_, idx) => idx !== indexToRemove);
+      if (productForm.photo === prev[indexToRemove]) {
+        setProductForm(p => ({ ...p, photo: next[0] || '' }));
+      }
+      return next;
+    });
   };
 
   const openAddModal = () => {
@@ -82,6 +101,7 @@ export default function ProductsTab() {
       category: defCat, 
       nameUk: '', nameRu: '', nameEn: '', price: '', badgeUk: '', badgeRu: '', badgeEn: '', photo: '' 
     });
+    setPhotosList([]);
     setSpecsText('');
     setDescriptionText('');
     setIsModalOpen(true);
@@ -100,6 +120,20 @@ export default function ProductsTab() {
       badgeEn: product.badgeEn || '',
       photo: product.photo || '',
     });
+
+    // Extract photos list
+    let list: string[] = [];
+    if (product.photosJson) {
+      try {
+        list = JSON.parse(product.photosJson);
+      } catch (e) {
+        list = [];
+      }
+    }
+    if (list.length === 0 && product.photo) {
+      list = [product.photo];
+    }
+    setPhotosList(list);
     
     // Parse specs back to textarea format and separate description
     try {
@@ -114,6 +148,26 @@ export default function ProductsTab() {
       setDescriptionText('');
     }
     setIsModalOpen(true);
+  };
+
+  const handleDelete = async (productId: number) => {
+    const isConfirmed = await confirm('Видалення товару', 'Ви дійсно бажаєте видалити цей товар?');
+    if (!isConfirmed) return;
+
+    try {
+      const res = await fetch(`/api/products/${productId}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        setProducts(prev => prev.filter(p => p.id !== productId));
+        showToast('Товар успішно видалено');
+      } else {
+        showToast('Помилка при видаленні товару', 'error');
+      }
+    } catch (err) {
+      showToast('Помилка з\'єднання при видаленні', 'error');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -137,8 +191,12 @@ export default function ProductsTab() {
       specsArray.push(['Опис', descriptionText.trim()]);
     }
 
+    const primaryPhoto = productForm.photo || photosList[0] || '';
+
     const body = {
       ...productForm,
+      photo: primaryPhoto,
+      photosJson: JSON.stringify(photosList.length > 0 ? photosList : (primaryPhoto ? [primaryPhoto] : [])),
       price: Number(productForm.price),
       specsJson: JSON.stringify(specsArray)
     };
@@ -150,33 +208,18 @@ export default function ProductsTab() {
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
+
       if (res.ok) {
-        showToast(`Товар ${editingProduct ? 'оновлено' : 'додано'}`);
+        showToast(editingProduct ? 'Товар оновлено' : 'Товар створено');
         setIsModalOpen(false);
         loadData();
       } else {
-        showToast('Помилка при збереженні товару', 'error');
+        showToast('Помилка збереження товару', 'error');
       }
     } catch (err) {
-      showToast('Помилка мережі', 'error');
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    if (await confirm('Видалення товару', 'Ви впевнені, що хочете видалити цей товар?')) {
-      try {
-        const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-        if (res.ok) {
-          showToast('Товар видалено');
-          loadData();
-        } else {
-          showToast('Помилка видалення', 'error');
-        }
-      } catch (e) {
-        showToast('Помилка мережі', 'error');
-      }
+      showToast('Помилка з\'єднання при збереженні', 'error');
     }
   };
 
@@ -261,15 +304,74 @@ export default function ProductsTab() {
             <form onSubmit={handleSubmit}>
               <div className="admin-modal-grid">
                 
-                {/* Column 1: Main Info */}
+                {/* Column 1: Main Info & Multi-Photo Upload */}
                 <div>
                   <div className="form-field">
-                    <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Фотографія товару</label>
-                    <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ border: 'none', background: 'none', paddingLeft: 0 }} disabled={isUploadingPhoto} />
-                    {isUploadingPhoto && <div style={{ fontSize: '12px', color: 'var(--border-focus)', marginTop: '6px' }}>Завантаження фото на Cloudinary...</div>}
-                    {productForm.photo && !isUploadingPhoto && (
-                      <div style={{ marginTop: '10px' }}><img src={productForm.photo} alt="Uploaded product preview" style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border-light)' }} /></div>
-                    )}
+                    <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
+                      Галерея фотографій товару ({photosList.length})
+                    </label>
+                    
+                    {/* Photos Thumbnail Grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(70px, 1fr))', gap: '8px', marginBottom: '12px' }}>
+                      {photosList.map((url, idx) => (
+                        <div 
+                          key={idx} 
+                          style={{ 
+                            position: 'relative', 
+                            height: '70px', 
+                            borderRadius: '6px', 
+                            overflow: 'hidden', 
+                            border: productForm.photo === url ? '2px solid var(--red)' : '1px solid var(--border-light)',
+                            cursor: 'pointer' 
+                          }}
+                          onClick={() => setProductForm(prev => ({ ...prev, photo: url }))}
+                          title={productForm.photo === url ? 'Головне фото обкладинки' : 'Зробити головним фото'}
+                        >
+                          <img src={url} alt={`Photo ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          {productForm.photo === url && (
+                            <span style={{ position: 'absolute', top: '2px', left: '2px', background: 'var(--red)', color: '#fff', fontSize: '9px', padding: '1px 4px', borderRadius: '3px', fontWeight: 'bold' }}>★ Cover</span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removePhotoFromList(idx);
+                            }}
+                            style={{
+                              position: 'absolute',
+                              top: '2px',
+                              right: '2px',
+                              background: 'rgba(0,0,0,0.7)',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '18px',
+                              height: '18px',
+                              fontSize: '12px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}
+                            title="Видалити фото"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handlePhotoUpload} 
+                      style={{ border: 'none', background: 'none', paddingLeft: 0 }} 
+                      disabled={isUploadingPhoto} 
+                    />
+                    {isUploadingPhoto && <div style={{ fontSize: '12px', color: 'var(--border-focus)', marginTop: '6px' }}>Завантаження фото в галерею...</div>}
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      Натисніть на фото в сітці, щоб обрати обкладинку товару.
+                    </div>
                   </div>
                   
                   <div className="form-field">

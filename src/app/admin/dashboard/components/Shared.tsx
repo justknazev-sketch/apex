@@ -15,6 +15,7 @@ export interface Product {
   badgeEn?: string | null;
   specsJson: string;
   photo?: string;
+  photosJson?: string | null;
 }
 
 export interface Order {
