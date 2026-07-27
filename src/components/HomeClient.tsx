@@ -227,6 +227,7 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
       {/* Hero Banner */}
       <header className="hero-wrapper">
         <div className="hero-bg-img" />
+        <div className="hero-wrapper-bottom-fade" />
         <div className="hero-content">
           <div className="hero-eyebrow">
             {t('hero_eyebrow').includes('—') ? (
