@@ -2422,58 +2422,22 @@ section h2 {
    BLOG PAGE STYLES
    ============================================= */
 
-/* Blog Hero — matches main hero style */
-.blog-hero-wrapper {
-  background: var(--bg-dark);
-  padding: 80px 24px 60px;
-  border-bottom: 1px solid var(--border-light);
-  position: relative;
-  overflow: hidden;
-}
-
-.blog-hero-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: 
-    linear-gradient(rgba(229, 57, 83, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(229, 57, 83, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-}
-
-.blog-hero-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
-}
-
-.blog-hero-title {
-  font-size: 56px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: -1px;
-  color: var(--text-primary);
-  line-height: 1.05;
-  margin-bottom: 16px;
-}
-
-.blog-hero-title .logo-force {
-  color: var(--red);
-}
-
-.blog-hero-desc {
-  font-size: 16px;
-  color: var(--text-secondary);
-  max-width: 560px;
-  line-height: 1.6;
-}
-
-/* Blog Posts Grid Section */
 .blog-section {
-  padding: 64px 24px 80px;
+  padding: 60px 24px 80px;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.blog-header {
+  margin-bottom: 40px;
+}
+
+.blog-title {
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  line-height: 1.15;
 }
 
 .blog-grid {

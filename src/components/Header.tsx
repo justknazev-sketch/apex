@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
-import { LayoutGrid, Wrench, MessageSquare, Phone } from 'lucide-react';
+import { LayoutGrid, Wrench, MessageSquare, Phone, FileText } from 'lucide-react';
 
 export default function Header() {
   const { language, setLanguage, t } = useLanguage();
@@ -58,7 +58,7 @@ export default function Header() {
 
         {/* Desktop Menu */}
         <ul className="nav-menu">
-          <li><Link href="/blog" className={pathname.startsWith('/blog') ? 'active' : ''}><span style={{ fontSize: '16px', marginRight: '6px' }}>📝</span>{t('nav_blog') === 'nav_blog' ? 'Блог' : t('nav_blog')}</Link></li>
+          <li><Link href="/blog" className={pathname.startsWith('/blog') ? 'active' : ''}><FileText size={16} />{t('nav_blog') === 'nav_blog' ? 'Блог' : t('nav_blog')}</Link></li>
           <li><a href="#catalog" onClick={(e) => handleNavClick(e, '#catalog')}><LayoutGrid size={16} />{t('nav_catalog')}</a></li>
           <li><a href="#constructor" onClick={(e) => handleNavClick(e, '#constructor')}><Wrench size={16} />{t('nav_constructor')}</a></li>
 
@@ -136,7 +136,7 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="mobile-menu-overlay" onClick={() => setMobileMenuOpen(false)}>
           <ul className="mobile-menu-panel" onClick={(e) => e.stopPropagation()}>
-            <li><Link href="/blog" onClick={() => setMobileMenuOpen(false)}><span style={{ fontSize: '24px', marginRight: '12px' }}>📝</span>{t('nav_blog') === 'nav_blog' ? 'Блог' : t('nav_blog')}</Link></li>
+            <li><Link href="/blog" onClick={() => setMobileMenuOpen(false)}><FileText size={24} />{t('nav_blog') === 'nav_blog' ? 'Блог' : t('nav_blog')}</Link></li>
             <li><a href="#catalog" onClick={(e) => handleNavClick(e, '#catalog')}><LayoutGrid size={24} />{t('nav_catalog')}</a></li>
             <li><a href="#constructor" onClick={(e) => handleNavClick(e, '#constructor')}><Wrench size={24} />{t('nav_constructor')}</a></li>
 
