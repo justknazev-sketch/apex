@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { id, nameUk, nameRu, nameEn } = body; // id is the hex value like "#2C2C2C"
+    const { id, ralCode, nameUk, nameRu, nameEn } = body;
 
     if (!id || !nameUk) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -31,12 +31,14 @@ export async function POST(request: Request) {
     const color = await prisma.color.upsert({
       where: { id },
       update: {
+        ralCode: ralCode || null,
         nameUk,
         nameRu: nameRu || nameUk,
         nameEn: nameEn || nameUk,
       },
       create: {
         id,
+        ralCode: ralCode || null,
         nameUk,
         nameRu: nameRu || nameUk,
         nameEn: nameEn || nameUk,
@@ -45,7 +47,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(color);
   } catch (error) {
-    console.error('Create color error:', error);
-    return NextResponse.json({ error: 'Failed to create color' }, { status: 500 });
+    console.error('Save color error:', error);
+    return NextResponse.json({ error: 'Failed to save color' }, { status: 500 });
   }
 }

@@ -29,10 +29,12 @@ interface ConstructorPart {
   nameEn: string;
   price: number;
   icon: string;
+  photo?: string | null;
 }
 
 interface ColorPreset {
   id: string;
+  ralCode?: string | null;
   nameUk: string;
   nameRu: string;
   nameEn: string;
@@ -71,6 +73,7 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
   const [selectedColor, setSelectedColor] = useState<ColorPreset | null>(
     initialColors.length > 0 ? initialColors[0] : null
   );
+  const [colorSearchQuery, setColorSearchQuery] = useState('');
   
   // Constructor lead form state
   const [custName, setCustName] = useState('');
@@ -391,7 +394,15 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                       className={`part-select-card ${isSelected ? 'selected' : ''}`}
                       onClick={() => togglePart(p)}
                     >
-                      <span className="part-icon">{p.icon}</span>
+                      {p.photo ? (
+                        <img 
+                          src={p.photo} 
+                          alt={getLocalizedName(p)} 
+                          style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '8px' }} 
+                        />
+                      ) : (
+                        <span className="part-icon">{p.icon || '🛠️'}</span>
+                      )}
                       <span className="part-name">{getLocalizedName(p)}</span>
                       <span className="part-price">+{p.price} ₴</span>
                     </div>
@@ -400,22 +411,65 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
               </div>
             </div>
 
-            {/* Step 2: Color picker */}
+            {/* Step 2: Color picker with RAL search */}
             <div className="builder-step-box">
-              <div className="builder-step-header">{t('constructor_step_color')}</div>
+              <div className="builder-step-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>{t('constructor_step_color')}</span>
+                {selectedColor && (
+                  <span style={{ fontSize: '13px', color: 'var(--red)', fontWeight: 700 }}>
+                    {getLocalizedName(selectedColor)} {selectedColor.ralCode ? `(${selectedColor.ralCode})` : ''}
+                  </span>
+                )}
+              </div>
+
+              <div style={{ marginBottom: '14px', marginTop: '8px' }}>
+                <input 
+                  type="text" 
+                  placeholder={
+                    language === 'uk' ? "Пошук кольору RAL або назвою (напр. 7016, графіт, червоний)..." : 
+                    language === 'ru' ? "Поиск цвета по коду RAL или названию (напр. 7016, графит)..." : 
+                    "Search color by RAL code or name..."
+                  }
+                  value={colorSearchQuery}
+                  onChange={(e) => setColorSearchQuery(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 14px',
+                    fontSize: '12px',
+                    borderRadius: '6px',
+                    border: '1px solid var(--border-light)',
+                    background: 'var(--bg-card)',
+                    color: 'var(--text-primary)',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
               <div className="color-circles-grid">
-                {colors.map((c) => {
-                  const isSelected = selectedColor?.id === c.id;
-                  return (
-                    <button 
-                      key={c.id}
-                      className={`color-circle-btn ${isSelected ? 'selected' : ''}`}
-                      style={{ backgroundColor: c.id }}
-                      onClick={() => setSelectedColor(c)}
-                      title={getLocalizedName(c)}
-                    />
-                  );
-                })}
+                {colors
+                  .filter(c => {
+                    if (!colorSearchQuery) return true;
+                    const q = colorSearchQuery.toLowerCase();
+                    return (
+                      c.id.toLowerCase().includes(q) ||
+                      (c.ralCode && c.ralCode.toLowerCase().includes(q)) ||
+                      c.nameUk.toLowerCase().includes(q) ||
+                      c.nameRu.toLowerCase().includes(q) ||
+                      c.nameEn.toLowerCase().includes(q)
+                    );
+                  })
+                  .map((c) => {
+                    const isSelected = selectedColor?.id === c.id;
+                    return (
+                      <button 
+                        key={c.id}
+                        className={`color-circle-btn ${isSelected ? 'selected' : ''}`}
+                        style={{ backgroundColor: c.id }}
+                        onClick={() => setSelectedColor(c)}
+                        title={`${getLocalizedName(c)} ${c.ralCode ? `(${c.ralCode})` : ''}`}
+                      />
+                    );
+                  })}
               </div>
             </div>
           </div>

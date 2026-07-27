@@ -44,19 +44,21 @@ model ProductCategory {
 }
 
 model ConstructorElement {
-  id     String @id // e.g. "turnik", "swedish", "brusy", "press", "lava", "rope"
+  id     String  @id // e.g. "turnik", "swedish", "brusy", "press", "lava", "rope"
   nameUk String
   nameRu String
   nameEn String
   price  Int
-  icon   String // emoji or icon class
+  icon   String  // emoji or icon class
+  photo  String? // custom image URL
 }
 
 model Color {
-  id     String @id // hex code, e.g. "#2C2C2C"
-  nameUk String
-  nameRu String
-  nameEn String
+  id      String  @id // hex code, e.g. "#2C2C2C"
+  ralCode String? // e.g. "RAL 7016"
+  nameUk  String
+  nameRu  String
+  nameEn  String
 }
 
 model Order {

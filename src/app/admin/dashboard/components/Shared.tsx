@@ -41,10 +41,12 @@ export interface ConstructorPart {
   nameEn: string;
   price: number;
   icon: string;
+  photo?: string | null;
 }
 
 export interface ColorPreset {
   id: string;
+  ralCode?: string | null;
   nameUk: string;
   nameRu: string;
   nameEn: string;

@@ -15,7 +15,7 @@ export async function PUT(
 
     const { id } = await context.params;
     const body = await request.json();
-    const { nameUk, nameRu, nameEn, price, icon } = body;
+    const { nameUk, nameRu, nameEn, price, icon, photo } = body;
 
     const existingElement = await prisma.constructorElement.findUnique({
       where: { id },
@@ -33,6 +33,7 @@ export async function PUT(
         nameEn: nameEn ?? existingElement.nameEn,
         price: price !== undefined ? Number(price) : existingElement.price,
         icon: icon ?? existingElement.icon,
+        photo: photo !== undefined ? photo : existingElement.photo,
       },
     });
 
@@ -43,7 +44,7 @@ export async function PUT(
   }
 }
 
-// DELETE a constructor element (admin only)
+// DELETE constructor element (admin only)
 export async function DELETE(
   request: Request,
   context: { params: Promise<{ id: string }> }
@@ -56,19 +57,11 @@ export async function DELETE(
 
     const { id } = await context.params;
 
-    const existingElement = await prisma.constructorElement.findUnique({
-      where: { id },
-    });
-
-    if (!existingElement) {
-      return NextResponse.json({ error: 'Constructor element not found' }, { status: 404 });
-    }
-
     await prisma.constructorElement.delete({
       where: { id },
     });
 
-    return NextResponse.json({ success: true, message: 'Element deleted' });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Delete element error:', error);
     return NextResponse.json({ error: 'Failed to delete constructor element' }, { status: 500 });
