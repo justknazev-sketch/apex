@@ -626,45 +626,53 @@ section h2 {
 }
 
 .hero-content h1 {
-  margin-bottom: 28px;
+  margin-bottom: 8px;
   text-transform: uppercase;
-  /* Prevent awkward single-word wraps on EN */
   word-break: keep-all;
   overflow-wrap: normal;
 }
 
-.hero-brand-kicker {
-  display: block;
-  font-size: clamp(16px, 2.5vw, 24px);
+.hero-brand-title {
+  font-size: clamp(48px, 9.5vw, 96px);
   font-weight: 900;
-  letter-spacing: 6px;
-  margin-bottom: 8px;
+  line-height: 0.95;
+  letter-spacing: -2px;
+  display: block;
 }
 
-.hero-brand-kicker .logo-apex {
+.hero-brand-title .logo-apex {
   color: var(--text-primary);
 }
 
-.hero-brand-kicker .logo-force {
+.hero-brand-title .logo-force {
   color: var(--red);
+  background: linear-gradient(135deg, #FF3D00 0%, #E53935 50%, #C62828 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  filter: drop-shadow(0 4px 20px rgba(229, 57, 83, 0.3));
 }
 
-.hero-main-title {
-  display: block;
-  font-size: clamp(38px, 6.5vw, 76px);
-  font-weight: 900;
-  line-height: 1.05;
+.hero-slogan-subtitle {
+  font-size: clamp(20px, 3.5vw, 32px);
+  font-weight: 800;
   color: var(--text-primary);
-  letter-spacing: -1px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-.hero-title-accent {
+.hero-slogan-accent {
   color: var(--red);
   background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  display: inline-block;
 }
 .hero-desc {
   color: var(--text-secondary);

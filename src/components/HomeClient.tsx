@@ -233,27 +233,26 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
               t('hero_eyebrow')
             )}
           </div>
-          <h1>
-            <span className="hero-brand-kicker">
-              <span className="logo-apex">APEX</span> <span className="logo-force">FORCE</span>
-            </span>
-            <span className="hero-main-title">
-              {(() => {
-                const raw = t('hero_title');
-                const cleanText = raw.replace(/^APEX FORCE\s*[—\-]\s*/i, '').trim();
-                const words = cleanText.split(' ');
-                if (words.length > 1) {
-                  const lastWord = words.pop();
-                  return (
-                    <>
-                      {words.join(' ')} <span className="hero-title-accent">{lastWord}</span>
-                    </>
-                  );
-                }
-                return cleanText;
-              })()}
-            </span>
+          <h1 className="hero-brand-title">
+            <span className="logo-apex">APEX</span> <span className="logo-force">FORCE</span>
           </h1>
+          <div className="hero-slogan-subtitle">
+            {(() => {
+              const raw = t('hero_title');
+              const cleanText = raw.replace(/^APEX FORCE\s*[—\-]\s*/i, '').trim();
+              const words = cleanText.split(' ');
+              if (words.length > 1) {
+                const lastWord = words.pop();
+                return (
+                  <>
+                    <span>{words.join(' ')}</span>
+                    <span className="hero-slogan-accent">{lastWord}</span>
+                  </>
+                );
+              }
+              return cleanText;
+            })()}
+          </div>
           <p className="hero-desc">{t('hero_desc')}</p>
           <div className="hero-actions">
             <button 
