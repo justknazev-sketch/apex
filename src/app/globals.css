@@ -2301,6 +2301,7 @@ section h2 {
 }
 
 /* Modals / Overlays for Admin CRUD */
+/* Modals / Overlays for Admin CRUD */
 .admin-modal-overlay {
   position: fixed;
   inset: 0;
@@ -2316,16 +2317,63 @@ section h2 {
 .admin-modal-card {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
-  border-radius: 8px;
+  border-radius: 12px;
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  padding: 30px;
+  padding: 28px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 .admin-modal-card-large {
   max-width: 900px;
+}
+
+.admin-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 14px;
+}
+
+.admin-modal-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: var(--transition-smooth);
+}
+
+.close-btn:hover {
+  background: var(--bg-dark);
+  color: var(--red);
+}
+
+.admin-modal-body {
+  margin-bottom: 20px;
+}
+
+.admin-modal-footer, .admin-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-light);
 }
 
 .admin-modal-grid {
@@ -2334,21 +2382,107 @@ section h2 {
   gap: 24px;
 }
 
-.admin-modal-header {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 24px;
-  border-bottom: 1px solid var(--border-light);
-  padding-bottom: 12px;
+.admin-form-col {
+  display: flex;
+  flex-direction: column;
 }
 
-.admin-modal-actions {
+.admin-form-group, .form-field {
   display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-  border-top: 1px solid var(--border-light);
-  padding-top: 20px;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.admin-form-group label, .form-field label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.admin-form-group input[type="text"],
+.admin-form-group input[type="number"],
+.admin-form-group input[type="tel"],
+.admin-form-group input[type="email"],
+.admin-form-group textarea,
+.admin-form-group select,
+.form-field input[type="text"],
+.form-field input[type="number"],
+.form-field input[type="tel"],
+.form-field input[type="email"],
+.form-field textarea,
+.form-field select {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text-primary);
+  outline: none;
+  transition: var(--transition-smooth);
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.admin-form-group input:focus,
+.admin-form-group textarea:focus,
+.admin-form-group select:focus,
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: var(--red);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+}
+
+/* Admin Language Tabs */
+.admin-lang-tabs {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--bg-dark);
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 18px;
+  align-self: flex-start;
+}
+
+.admin-lang-tabs button, .admin-lang-tab {
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.admin-lang-tabs button.active, .admin-lang-tab.active {
+  background: var(--red);
+  color: white;
+}
+
+.photo-upload-placeholder {
+  width: 100%;
+  min-height: 110px;
+  border: 2px dashed var(--border-light);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: var(--bg-dark);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 13px;
+  transition: var(--transition-smooth);
+}
+
+.photo-upload-placeholder:hover {
+  border-color: var(--red);
+  color: var(--red);
 }
 
 /* Responsive Breakpoints */
