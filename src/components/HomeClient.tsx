@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 import { FaPhoneAlt, FaViber, FaTelegramPlane, FaInstagram, FaTiktok } from 'react-icons/fa';
+import { RAL_GROUPS, RAL_CLASSIC_COLLECTION, RalColor } from '@/lib/ralColors';
 
 interface Product {
   id: number;
@@ -74,6 +75,7 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
     initialColors.length > 0 ? initialColors[0] : null
   );
   const [colorSearchQuery, setColorSearchQuery] = useState('');
+  const [selectedRalGroup, setSelectedRalGroup] = useState<string>('all');
   
   // Constructor lead form state
   const [custName, setCustName] = useState('');
@@ -375,10 +377,29 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
       </section>
 
       {/* Configurator / "Собери сам" */}
-      <section id="constructor">
-        <div className="section-label">{t('constructor_label')}</div>
-        <h2>{t('constructor_title')}</h2>
-        <p className="section-desc">{t('constructor_desc')}</p>
+      {(() => {
+        const fullRalList = RAL_CLASSIC_COLLECTION.map(r => ({
+          id: r.hex,
+          ralCode: r.ralCode,
+          group: r.group,
+          nameUk: r.nameUk,
+          nameRu: r.nameRu,
+          nameEn: r.nameEn,
+        }));
+
+        const allAvailableColors = [
+          ...colors.map(c => ({
+            ...c,
+            group: RAL_CLASSIC_COLLECTION.find(r => r.ralCode === c.ralCode || r.hex.toLowerCase() === c.id.toLowerCase())?.group || 'grey'
+          })),
+          ...fullRalList.filter(r => !colors.some(c => c.ralCode === r.ralCode || c.id.toLowerCase() === r.id.toLowerCase()))
+        ];
+
+        return (
+          <section id="constructor">
+            <div className="section-label">{t('constructor_label')}</div>
+            <h2>{t('constructor_title')}</h2>
+            <p className="section-desc">{t('constructor_desc')}</p>
 
         <div className="constructor-wrapper">
           <div className="builder-panel">
@@ -411,7 +432,7 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
               </div>
             </div>
 
-            {/* Step 2: Color picker with RAL search */}
+            {/* Step 2: 2-Step RAL Color Selector */}
             <div className="builder-step-box">
               <div className="builder-step-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>{t('constructor_step_color')}</span>
@@ -422,13 +443,57 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                 )}
               </div>
 
-              <div style={{ marginBottom: '14px', marginTop: '8px' }}>
+              {/* Step 2.1: Group Category Tabs */}
+              <div className="ral-group-tabs-bar" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', margin: '12px 0' }}>
+                <button 
+                  className={`ral-group-tab-btn ${selectedRalGroup === 'all' ? 'active' : ''}`}
+                  onClick={() => setSelectedRalGroup('all')}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid var(--border-light)',
+                    background: selectedRalGroup === 'all' ? 'var(--red)' : 'var(--bg-dark)',
+                    color: selectedRalGroup === 'all' ? '#fff' : 'var(--text-secondary)',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  🌈 Всі ({allAvailableColors.length})
+                </button>
+                {RAL_GROUPS.map(grp => (
+                  <button 
+                    key={grp.key}
+                    className={`ral-group-tab-btn ${selectedRalGroup === grp.key ? 'active' : ''}`}
+                    onClick={() => setSelectedRalGroup(grp.key)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '6px 10px',
+                      borderRadius: '6px',
+                      border: '1px solid var(--border-light)',
+                      background: selectedRalGroup === grp.key ? 'var(--red)' : 'var(--bg-dark)',
+                      color: selectedRalGroup === grp.key ? '#fff' : 'var(--text-secondary)',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <span>{grp.icon}</span>
+                    <span>{language === 'uk' ? grp.nameUk : language === 'ru' ? grp.nameRu : grp.nameEn}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Step 2.2: Search Bar */}
+              <div style={{ marginBottom: '14px' }}>
                 <input 
                   type="text" 
                   placeholder={
-                    language === 'uk' ? "Пошук кольору RAL або назвою (напр. 7016, графіт, червоний)..." : 
-                    language === 'ru' ? "Поиск цвета по коду RAL или названию (напр. 7016, графит)..." : 
-                    "Search color by RAL code or name..."
+                    language === 'uk' ? "Швидкий пошук за кодом RAL (напр. 7016, 9005, 3020)..." : 
+                    language === 'ru' ? "Быстрый поиск по коду RAL (напр. 7016, 9005, 3020)..." : 
+                    "Quick search by RAL code..."
                   }
                   value={colorSearchQuery}
                   onChange={(e) => setColorSearchQuery(e.target.value)}
@@ -445,9 +510,13 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                 />
               </div>
 
-              <div className="color-circles-grid">
-                {colors
+              {/* Step 2.3: Shade Swatches Grid */}
+              <div className="color-circles-grid" style={{ maxHeight: '220px', overflowY: 'auto', paddingRight: '4px' }}>
+                {allAvailableColors
                   .filter(c => {
+                    // Group filter
+                    if (selectedRalGroup !== 'all' && c.group !== selectedRalGroup) return false;
+                    // Search filter
                     if (!colorSearchQuery) return true;
                     const q = colorSearchQuery.toLowerCase();
                     return (
@@ -458,13 +527,13 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
                       c.nameEn.toLowerCase().includes(q)
                     );
                   })
-                  .map((c) => {
-                    const isSelected = selectedColor?.id === c.id;
+                  .map((c, idx) => {
+                    const isSelected = selectedColor?.id === c.id || (selectedColor?.ralCode && selectedColor.ralCode === c.ralCode);
                     return (
                       <button 
-                        key={c.id}
+                        key={`${c.id}-${c.ralCode || idx}`}
                         className={`color-circle-btn ${isSelected ? 'selected' : ''}`}
-                        style={{ backgroundColor: c.id }}
+                        style={{ backgroundColor: c.id, width: '32px', height: '32px', border: isSelected ? '3px solid var(--red)' : '1px solid var(--border-light)' }}
                         onClick={() => setSelectedColor(c)}
                         title={`${getLocalizedName(c)} ${c.ralCode ? `(${c.ralCode})` : ''}`}
                       />
@@ -546,6 +615,8 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
           </div>
         </div>
       </section>
+        );
+      })()}
 
 
 
