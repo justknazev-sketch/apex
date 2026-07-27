@@ -378,6 +378,51 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
 
       {/* Configurator / "Собери сам" */}
       {(() => {
+        const getGroupForColor = (c: { id: string; ralCode?: string | null }) => {
+          const match = RAL_CLASSIC_COLLECTION.find(
+            r => (c.ralCode && r.ralCode === c.ralCode) || r.hex.toLowerCase() === c.id.toLowerCase()
+          );
+          if (match) return match.group;
+
+          let hex = c.id.replace('#', '');
+          if (hex.length === 3) hex = hex.split('').map(x => x + x).join('');
+          if (hex.length !== 6) return 'grey';
+
+          const r = parseInt(hex.substring(0, 2), 16) / 255;
+          const g = parseInt(hex.substring(2, 4), 16) / 255;
+          const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+          const max = Math.max(r, g, b), min = Math.min(r, g, b);
+          let h = 0, s = 0, l = (max + min) / 2;
+
+          if (max !== min) {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+              case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+              case g: h = (b - r) / d + 2; break;
+              case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+          }
+
+          const hue = h * 360;
+          const sat = s * 100;
+          const light = l * 100;
+
+          if (light < 15 || light > 88 || sat < 12) return 'black_white';
+          if (sat < 20) return 'grey';
+
+          if (hue >= 15 && hue < 45) return 'orange';
+          if (hue >= 45 && hue < 70) return 'yellow';
+          if (hue >= 70 && hue < 165) return 'green';
+          if (hue >= 165 && hue < 260) return 'blue';
+          if (hue >= 260 && hue < 320) return 'purple';
+          if (hue >= 320 || hue < 15) return 'red';
+
+          return 'grey';
+        };
+
         const fullRalList = RAL_CLASSIC_COLLECTION.map(r => ({
           id: r.hex,
           ralCode: r.ralCode,
@@ -387,12 +432,16 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
           nameEn: r.nameEn,
         }));
 
-        const allAvailableColors = [
-          ...colors.map(c => ({
+        const dbRalColors = colors
+          .filter(c => c.ralCode || RAL_CLASSIC_COLLECTION.some(r => r.hex.toLowerCase() === c.id.toLowerCase()))
+          .map(c => ({
             ...c,
-            group: RAL_CLASSIC_COLLECTION.find(r => r.ralCode === c.ralCode || r.hex.toLowerCase() === c.id.toLowerCase())?.group || 'grey'
-          })),
-          ...fullRalList.filter(r => !colors.some(c => c.ralCode === r.ralCode || c.id.toLowerCase() === r.id.toLowerCase()))
+            group: getGroupForColor(c)
+          }));
+
+        const allAvailableColors = [
+          ...dbRalColors,
+          ...fullRalList.filter(r => !dbRalColors.some(c => c.ralCode === r.ralCode || c.id.toLowerCase() === r.id.toLowerCase()))
         ];
 
         return (
