@@ -97,3 +97,18 @@ model SeoMetadata {
   descRu  String
   descEn  String
 }
+
+model BlogPost {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  titleUk   String
+  titleRu   String
+  titleEn   String
+  contentUk String
+  contentRu String
+  contentEn String
+  photo     String?  // Cloudinary image URL
+  videoUrl  String?  // YouTube or other video URL
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

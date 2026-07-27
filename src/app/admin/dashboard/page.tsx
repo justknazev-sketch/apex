@@ -6,10 +6,11 @@ import ToastContainer from './components/Toast';
 import OrdersTab from './components/OrdersTab';
 import ProductsTab from './components/ProductsTab';
 import ConstructorTab from './components/ConstructorTab';
+import BlogTab from './components/BlogTab';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'constructor'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'constructor' | 'blog'>('orders');
 
   const handleLogout = async () => {
     const res = await fetch('/api/auth/logout', { method: 'POST' });
@@ -34,12 +35,14 @@ export default function AdminDashboardPage() {
         <button className={`admin-tab-btn ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}>Заявки</button>
         <button className={`admin-tab-btn ${activeTab === 'products' ? 'active' : ''}`} onClick={() => setActiveTab('products')}>Каталог</button>
         <button className={`admin-tab-btn ${activeTab === 'constructor' ? 'active' : ''}`} onClick={() => setActiveTab('constructor')}>Деталі & Кольори</button>
+        <button className={`admin-tab-btn ${activeTab === 'blog' ? 'active' : ''}`} onClick={() => setActiveTab('blog')}>Блог</button>
       </div>
 
       <div className="admin-pane">
         {activeTab === 'orders' && <OrdersTab />}
         {activeTab === 'products' && <ProductsTab />}
         {activeTab === 'constructor' && <ConstructorTab />}
+        {activeTab === 'blog' && <BlogTab />}
       </div>
     </div>
   );
