@@ -166,8 +166,8 @@ export default function CartDrawer() {
   if (!isCartOpen) return null;
 
   return (
-    <div className="cart-overlay" onClick={closeCart}>
-      <div className="cart-drawer" onClick={(e) => e.stopPropagation()}>
+    <div className={`cart-overlay ${isCartOpen ? 'open' : ''}`} onClick={closeCart}>
+      <div className={`cart-drawer ${isCartOpen ? 'open' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="cart-header">
           <h2>{getText('cart_title', 'Кошик', 'Корзина', 'Cart')} ({cart.reduce((sum, i) => sum + i.quantity, 0)})</h2>
           <button className="cart-close-btn" onClick={closeCart}>×</button>
