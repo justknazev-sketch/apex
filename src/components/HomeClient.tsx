@@ -90,6 +90,8 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
   const [cbComment, setCbComment] = useState('');
   const [cbSuccess, setCbSuccess] = useState(false);
 
+
+
   const getLocalizedName = (item: Product | ConstructorPart | ColorPreset) => {
     if (language === 'ru') return item.nameRu;
     if (language === 'en') return item.nameEn;
@@ -228,53 +230,180 @@ export default function HomeClient({ initialProducts, initialParts, initialColor
       <header className="hero-wrapper">
         <div className="hero-bg-img" />
         <div className="hero-wrapper-bottom-fade" />
-        <div className="hero-content">
-          <div className="hero-eyebrow">
-            {t('hero_eyebrow').includes('—') ? (
-              <>
-                <span>{t('hero_eyebrow').split('—')[0].trim()}</span>
-                <span style={{ color: 'var(--red)', margin: '0 8px' }}>•</span>
-                <span>{t('hero_eyebrow').split('—')[1].trim()}</span>
-              </>
-            ) : (
-              t('hero_eyebrow')
-            )}
+        
+        <div className="hero-content-container">
+          {/* Top Badge */}
+          <div className="hero-top-badge">
+            <span className="hero-badge-icon">⚡</span>
+            <span>{language === 'ru' ? 'СОБСТВЕННОЕ ПРОИЗВОДСТВО • ПРОФЕССИОНАЛЬНОЕ ОБОРУДОВАНИЕ' : language === 'en' ? 'OWN MANUFACTURING • PROFESSIONAL EQUIPMENT' : 'ВЛАСНЕ ВИРОБНИЦТВО • ПРОФЕСІЙНЕ ОБЛАДНАННЯ'}</span>
           </div>
-          <h1 className="hero-brand-title">
-            <span className="logo-apex">APEX</span> <span className="logo-force">FORCE</span>
-          </h1>
-          <div className="hero-slogan-subtitle">
-            {(() => {
-              const raw = t('hero_title');
-              const cleanText = raw.replace(/^APEX FORCE\s*[—\-]\s*/i, '').trim();
-              const words = cleanText.split(' ');
-              if (words.length > 1) {
-                const lastWord = words.pop();
-                return (
-                  <>
-                    <span>{words.join(' ')}</span>
-                    <span className="hero-slogan-accent">{lastWord}</span>
-                  </>
-                );
-              }
-              return cleanText;
-            })()}
+
+          <div className="hero-main-grid">
+            <div className="hero-text-block">
+              <h1 className="hero-combined-title">
+                {language === 'ru' ? (
+                  <>APEX FORCE — СПОРТИВНОЕ ОБОРУДОВАНИЕ <span className="hero-combined-accent">СОБСТВЕННОГО ПРОИЗВОДСТВА</span></>
+                ) : language === 'en' ? (
+                  <>APEX FORCE — PROFESSIONAL GEAR <span className="hero-combined-accent">DIRECTLY FROM FACTORY</span></>
+                ) : (
+                  <>APEX FORCE — СПОРТИВНЕ ОБЛАДНАННЯ <span className="hero-combined-accent">ВЛАСНОГО ВИРОБНИЦТВА</span></>
+                )}
+              </h1>
+              <p className="hero-desc">
+                {language === 'ru' 
+                  ? 'Проектирование, изготовление и монтаж уличных воркаут комплексов, настенных турников и шведских стенок любой сложности.'
+                  : language === 'en'
+                  ? 'Design, manufacturing, and installation of outdoor workout rigs, wall pull-up bars, and Swedish ladders.'
+                  : 'Проєктування, виготовлення та монтаж вуличних воркаут комплексів, настінних турніків та шведських стінок будь-якої складності.'}
+              </p>
+
+              <div className="hero-actions">
+                <button 
+                  className="btn-primary"
+                  onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  {t('hero_btn_catalog')}
+                </button>
+                <button 
+                  className="btn-outline"
+                  onClick={() => document.getElementById('constructor')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  {t('hero_btn_builder')}
+                </button>
+              </div>
+            </div>
           </div>
-          <p className="hero-desc">{t('hero_desc')}</p>
-          <div className="hero-actions">
-            <button 
-              className="btn-primary"
-              onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}
-            >
-              {t('hero_btn_catalog')}
-            </button>
-            <button 
-              className="btn-outline"
-              onClick={() => document.getElementById('constructor')?.scrollIntoView({ behavior: 'smooth' })}
-            >
-              {t('hero_btn_builder')}
-            </button>
+
+          {/* Visual Category Grid (The 4 visual cards requested by client) */}
+          <div className="visual-categories-section">
+            <div className="visual-categories-title">
+              {language === 'ru' ? 'ОСНОВНЫЕ НАПРАВЛЕНИЯ' : language === 'en' ? 'KEY PRODUCT LINES' : 'ОСНОВНІ НАПРЯМКИ'}
+            </div>
+
+            <div className="visual-categories-grid">
+              <div 
+                className="visual-cat-card"
+                onClick={() => {
+                  setActiveTab('street');
+                  document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                <div className="visual-cat-img-wrap">
+                  <Image 
+                    src="/images/categories/street_workout.jpg" 
+                    alt="Street Workout" 
+                    fill 
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    style={{ objectFit: 'cover' }} 
+                  />
+                  <span className="visual-cat-badge">NEW</span>
+                </div>
+                <div className="visual-cat-info">
+                  <h3>{language === 'ru' ? 'УЛИЧНЫЕ КОМПЛЕКСЫ' : language === 'en' ? 'STREET WORKOUT' : 'ВУЛИЧНІ КОМПЛЕКСИ'}</h3>
+                  <p>{language === 'ru' ? 'Воркаут площадки и комплексы' : language === 'en' ? 'Outdoor workout rigs & parks' : 'Воркаут майданчики та комплекси'}</p>
+                </div>
+              </div>
+
+              <div 
+                className="visual-cat-card"
+                onClick={() => {
+                  setActiveTab('turnik');
+                  document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                <div className="visual-cat-img-wrap">
+                  <Image 
+                    src="/images/categories/wall_mount.jpg" 
+                    alt="Wall Mounts" 
+                    fill 
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    style={{ objectFit: 'cover' }} 
+                  />
+                </div>
+                <div className="visual-cat-info">
+                  <h3>{language === 'ru' ? 'НАСТЕННЫЕ КОМПЛЕКСЫ' : language === 'en' ? 'WALL MOUNTED' : 'НАСТІННІ КОМПЛЕКСИ'}</h3>
+                  <p>{language === 'ru' ? 'Турники, брусья, пресс 3-в-1' : language === 'en' ? 'Pull-up & dip bars 3-in-1' : 'Турніки, бруси, прес 3-в-1'}</p>
+                </div>
+              </div>
+
+              <div 
+                className="visual-cat-card"
+                onClick={() => {
+                  setActiveTab('swedish');
+                  document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                <div className="visual-cat-img-wrap">
+                  <Image 
+                    src="/images/categories/swedish_wall.jpg" 
+                    alt="Swedish Walls" 
+                    fill 
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    style={{ objectFit: 'cover' }} 
+                  />
+                </div>
+                <div className="visual-cat-info">
+                  <h3>{language === 'ru' ? 'ШВЕДСКИЕ СТЕНКИ' : language === 'en' ? 'SWEDISH WALLS' : 'ШВЕДСЬКІ СТІНКИ'}</h3>
+                  <p>{language === 'ru' ? 'Универсальные гимнастические стенки' : language === 'en' ? 'Universal home ladders' : 'Універсальні гімнастичні стінки'}</p>
+                </div>
+              </div>
+
+              <div 
+                className="visual-cat-card"
+                onClick={() => {
+                  setActiveTab('workout');
+                  document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                <div className="visual-cat-img-wrap">
+                  <Image 
+                    src="/images/categories/gear_accessories.jpg" 
+                    alt="Accessories" 
+                    fill 
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    style={{ objectFit: 'cover' }} 
+                  />
+                </div>
+                <div className="visual-cat-info">
+                  <h3>{language === 'ru' ? 'СНАРЯДЫ И АКСЕССУАРЫ' : language === 'en' ? 'EQUIPMENT & GEAR' : 'СНАРЯДИ ТА АКСЕСУАРИ'}</h3>
+                  <p>{language === 'ru' ? 'Боксерские мешки, кольца, резины' : language === 'en' ? 'Punching bags, rings & straps' : 'Боксерські мішки, кільця, гуми'}</p>
+                </div>
+              </div>
+            </div>
           </div>
+
+          {/* Quick Callback / Request Bar */}
+          <div className="quick-callback-bar">
+            <div className="quick-cb-left">
+              <span className="quick-cb-tag">
+                {language === 'ru' ? 'ЗАПРОС НА ЗВОНОК:' : language === 'en' ? 'CALLBACK REQUEST:' : 'ЗАПИТ НА ДЗВІНОК:'}
+              </span>
+              <form className="quick-cb-form" onSubmit={handleCallbackSubmit}>
+                <input 
+                  type="text" 
+                  placeholder={language === 'ru' ? 'Ваше имя' : language === 'en' ? 'Your name' : 'Ваше ім\'я'} 
+                  value={cbName} 
+                  onChange={(e) => setCbName(e.target.value)} 
+                  required
+                />
+                <input 
+                  type="tel" 
+                  placeholder={language === 'ru' ? 'Номер телефона' : language === 'en' ? 'Phone number' : 'Номер телефону'} 
+                  value={cbPhone} 
+                  onChange={(e) => setCbPhone(e.target.value)} 
+                  required
+                />
+                <button type="submit" className="btn-primary-sm">
+                  {cbSuccess ? (language === 'ru' ? '✓ Отправлено' : language === 'en' ? '✓ Sent' : '✓ Надіслано') : (language === 'ru' ? 'ЗАКАЗАТЬ' : language === 'en' ? 'SUBMIT' : 'ЗАМОВИТИ')}
+                </button>
+              </form>
+            </div>
+            <div className="quick-cb-contacts">
+              <a href="tel:+380733730110" className="quick-phone">📞 +38 (073) 373-01-10</a>
+              <span className="quick-address">📍 м. Дніпро, вул. Мрижана, 23</span>
+            </div>
+          </div>
+
         </div>
       </header>
 
